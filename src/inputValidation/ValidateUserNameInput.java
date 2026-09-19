@@ -220,7 +220,7 @@ public class ValidateUserNameInput {
 			else if (currentCharNdx < input.length()) {
 				// There are characters remaining in the input, so the input is not valid
 				userNameRecognizerErrorMessage += 
-					"A UserName character may only contain the characters A-Z, a-z, 0-9.\n";
+					"A UserName character may only contain\n the characters A-Z, a-z, 0-9.\n";
 				return userNameRecognizerErrorMessage;
 			}
 			else {

@@ -107,7 +107,7 @@ public class ValidateEmailInput {
 		// Let's ensure there is input
 		if (input.length() <= 0) {
 			emailAddressErrorMessage = "There was no email address found.\n";
-			return emailAddressErrorMessage + displayInput(input, 0);
+			return emailAddressErrorMessage;
 		}
 		currentChar = input.charAt(0);		// The current character from the above indexed position
 
