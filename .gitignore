@@ -26,6 +26,8 @@ replay_pid*
 # Eclipse Files
 .settings/
 build.fxbuild
+.classpath
+.project
 
 #Bin files
 /bin/
