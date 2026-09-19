@@ -81,7 +81,7 @@ public class ControllerUserLogin {
 			displayInputErrorAlert(usernameLength);
 			return;
 		} else if (passwordLength.length() != 0) {
-			displayInputErrorAlert(password);
+			displayInputErrorAlert(passwordLength);
 			return;
 		}
     	

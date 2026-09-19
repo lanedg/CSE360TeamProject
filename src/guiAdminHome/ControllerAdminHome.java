@@ -178,9 +178,9 @@ public class ControllerAdminHome {
 	 * @param emailAddress	This String holds what is expected to be an email address
 	 */
 	protected static boolean invalidEmailAddress(String emailAddress) {
-		if (emailAddress.length() == 0) {
-			ViewAdminHome.alertEmailError.setContentText(
-					"Correct the email address and try again.");
+		String emailAdressValid = inputValidation.ValidateEmailInput.checkEmailAddress(emailAddress);
+		if (emailAdressValid.length() != 0) {
+			ViewAdminHome.alertEmailError.setContentText(emailAdressValid);
 			ViewAdminHome.alertEmailError.showAndWait();
 			return true;
 		}

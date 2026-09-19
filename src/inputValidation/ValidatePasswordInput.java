@@ -82,27 +82,27 @@ public class ValidatePasswordInput {
 		}
 		
 		// Construct a String with a list of the requirement elements that were found.
-		String errMessage = "";
+		String errMessage = "The password entered fails to meet the following criteria: \nAt least one ";
 		if (!foundUpperCase)
-			errMessage += "Upper case; ";
+			errMessage += "Uppercase letter, ";
 		
 		if (!foundLowerCase)
-			errMessage += "Lower case; ";
+			errMessage += "Lowercase letter, ";
 		
 		if (!foundNumericDigit)
-			errMessage += "Numeric digits; ";
+			errMessage += "Numeric digit, ";
 			
 		if (!foundSpecialChar)
-			errMessage += "Special character; ";
+			errMessage += "Special character, ";
 			
 		if (!foundLongEnough)
-			errMessage += "Long Enough; ";
+			errMessage += "\nAt least 8 characters long ";
 		
-		if (errMessage == "")
+		if (errMessage == "The password entered fails to meet the following criteria: \nAt least one ")
 			return "";
 		
 		// If it gets here, there something was not found, so return an appropriate message
 		passwordIndexofError = currentCharNdx;
-		return errMessage + "conditions were not satisfied";
+		return errMessage;
 	}
 }
