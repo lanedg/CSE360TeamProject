@@ -1,6 +1,6 @@
 package inputValidation;
 
-public class ValidateInput {
+public class ValidateUserNameInput {
 	/**
 	 * <p> Title: FSM-translated UserNameRecognizer. </p>
 	 * 
