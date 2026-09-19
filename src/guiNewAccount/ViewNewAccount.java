@@ -60,6 +60,9 @@ public class ViewNewAccount {
 
 	// This alert is used should the user enter two passwords that do not match
 	protected static Alert alertUsernamePasswordError = new Alert(AlertType.INFORMATION);
+	
+	//This alert is used should the user enter and invalid username or password
+	protected static Alert alertInvalidInputError = new Alert(AlertType.INFORMATION);
 
     protected static Button button_Quit = new Button("Quit");
 

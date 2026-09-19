@@ -93,6 +93,11 @@ public class ControllerFirstAdmin {
 		ViewFirstAdmin.label_PasswordsDoNotMatch.setText("");
 	}
 	
+	protected static void displayInputErrorAlert(String content) {
+		ViewFirstAdmin.alertInvalidInputError.setContentText(content);
+		ViewFirstAdmin.alertInvalidInputError.showAndWait();
+	}
+	
 	
 	/**********
 	 * <p> Method: doSetupAdmin() </p>
@@ -103,6 +108,35 @@ public class ControllerFirstAdmin {
 	 * 
 	 */
 	protected static void doSetupAdmin(Stage ps, int r) {
+		
+		//Check input length first
+		String usernameLength = inputValidation.ValidateInputLength.checkInputLength(adminUsername);
+		String password1Length = inputValidation.ValidateInputLength.checkInputLength(adminPassword1);
+		String password2Length = inputValidation.ValidateInputLength.checkInputLength(adminPassword2);
+		if (usernameLength.length() != 0) {
+			displayInputErrorAlert(usernameLength);
+			return;
+		} else if (password1Length.length() != 0) {
+			displayInputErrorAlert(password1Length);
+			return;
+		} else if (password2Length.length() != 0){
+			displayInputErrorAlert(password2Length);
+			return;
+		}
+		
+		//Check username and password validity
+		String validUserName = inputValidation.ValidateUserNameInput.checkForValidUserName(adminUsername);
+		String validPassword = inputValidation.ValidatePasswordInput.evaluatePassword(adminPassword1);
+		if (validUserName.length() != 0) {
+			displayInputErrorAlert(validUserName);
+			ViewFirstAdmin.text_AdminUsername.setText("");
+			return;
+		} else if (validPassword.length() != 0) {
+			displayInputErrorAlert(validPassword);
+			ViewFirstAdmin.text_AdminPassword1.setText("");
+			ViewFirstAdmin.text_AdminPassword2.setText("");
+			return;
+		}
 		
 		// Make sure the two passwords are the same
 		if (adminPassword1.compareTo(adminPassword2) == 0) {
