@@ -46,6 +46,9 @@ public class ViewUserLogin {
 	private static Label label_LogInInsrtuctions = new Label("Enter your user name and password and "+	
 			"then click on the LogIn button");
 	protected static Alert alertUsernamePasswordError = new Alert(AlertType.INFORMATION);
+	
+	//Alert user if they entered a invalid username or password
+	protected static Alert alertInvalidInputError = new Alert(AlertType.INFORMATION);
 
 
 	//	private User user;
