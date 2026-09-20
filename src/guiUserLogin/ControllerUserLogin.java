@@ -98,6 +98,7 @@ public class ControllerUserLogin {
     	}
 		// System.out.println("*** Username is valid");
 		
+     	if(guiPasswordReset.PasswordReset.resetLogin(ts,username,password)) { return; }
 		// Check to see that the login password matches the account password
     	String actualPassword = theDatabase.getCurrentPassword();
     	

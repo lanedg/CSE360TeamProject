@@ -118,6 +118,8 @@ public class Database {
 				+ "newRole1 BOOL DEFAULT FALSE, "
 				+ "newRole2 BOOL DEFAULT FALSE)";
 		statement.execute(userTable);
+		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS otp VARCHAR(8)"); //added by Farid, to store the otp
+		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS passwordResetNeeded BOOLEAN DEFAULT FALSE NOT NULL");
 		
 		// Create the invitation codes table
 	    String invitationCodesTable = "CREATE TABLE IF NOT EXISTS InvitationCodes ("
@@ -1060,5 +1062,40 @@ public class Database {
 		} catch(SQLException se){ 
 			se.printStackTrace(); 
 		} 
+	}
+	public boolean setOTP(String username, String otp) throws SQLException {
+		String otpQuery = "UPDATE userDB SET otp = ?, passwordResetNeeded = TRUE WHERE username = ?";
+		
+		try (PreparedStatement statement = connection.prepareStatement(otpQuery)) {
+			statement.setString(1,  otp);
+			statement.setString(2, username);
+			
+			return statement.executeUpdate() == 1;
+		}
+	}
+	public boolean useOTP(String username, String otp) throws SQLException {
+		String otpQuery = "UPDATE userDB SET otp = NULL WHERE username = ? AND otp = ? AND passwordResetNeeded = True";
+		try (PreparedStatement statement = connection.prepareStatement(otpQuery)) {
+			statement.setString(1, username);
+			statement.setString(2, otp);
+			return statement.executeUpdate()==1;
+		}
+	}
+	public boolean passwordResetNeeded(String username) throws SQLException {
+		String query = "SELECT passwordResetNeeded FROM userDB WHERE userName = ?";
+		try(PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, username);
+			try(ResultSet output = statement.executeQuery()) {
+				return output.next() && output.getBoolean("passwordResetNeeded"); //cant read nonexistents, we're good
+			}
+		}
+	}
+	public boolean finalizePasswordReset(String username, String updatedPassword) throws SQLException {
+		String query = "UPDATE userDB SET password = ?, passwordResetNeeded = FALSE WHERE userName = ? AND passwordResetNeeded = TRUE AND otp IS NULL";
+		try(PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, updatedPassword);
+			statement.setString(2, username);
+			return statement.executeUpdate()==1;
+		}
 	}
 }
