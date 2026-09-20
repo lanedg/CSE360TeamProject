@@ -1176,7 +1176,6 @@ public class Database {
 	 * @return true if this user plays a Reviewer role, else false
 	 *  
 	 */
-	public boolean getCurrentNewRole2() { return currentNewRole2;};
 
 	
 	/*******
@@ -1212,20 +1211,16 @@ public class Database {
 		return allUsersList;
 	}
 	
-	/*******
-	 * <p> Debugging method</p>
->>>>>>> stash
-	 * 
-	 */
+
 	public boolean getCurrentNewRole2() {
 		return currentNewRole2;
 	};
 	
 	public String getRoles() {
     	java.util.ArrayList<String> rolesList = new java.util.ArrayList<>();
-    	if (adminRole) rolesList.add("Admin");
-    	if (role1) rolesList.add("Role 1");
-    	if (role2) rolesList.add("Role 2");
+    	if (currentAdminRole) rolesList.add("Admin");
+    	if (currentNewRole1) rolesList.add("Role 1");
+    	if (currentNewRole2) rolesList.add("Role 2");
     	
     	String combinedRoles = String.join(", ", rolesList);
     	if (combinedRoles.isEmpty()) return "No Roles Assigned";
@@ -1271,6 +1266,7 @@ public class Database {
 	 * </p>
 	 * 
 	 */
+	
 	// Closes the database statement and connection.
 	public void closeConnection() {
 		try {
