@@ -1247,12 +1247,10 @@ public class Database {
 		ResultSet resultSet = statement.executeQuery(query);
 		ResultSetMetaData meta = resultSet.getMetaData();
 		while (resultSet.next()) {
-		for (int i = 0; i < meta.getColumnCount(); i++) {
-		System.out.println(
-		meta.getColumnLabel(i + 1) + ": " +
-				resultSet.getString(i + 1));
-		}
-		System.out.println();
+			for (int i = 0; i < meta.getColumnCount(); i++) {
+				System.out.println(meta.getColumnLabel(i + 1) + ": " + resultSet.getString(i + 1));
+			}
+			System.out.println();
 		}
 		resultSet.close();
 	}
