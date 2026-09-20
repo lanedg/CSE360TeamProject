@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import database.Database;
 import entityClasses.User;
+import guiFirstAdmin.ViewFirstAdmin;
 
 /*******
  * <p> Title: ControllerNewAccount Class. </p>
@@ -49,6 +50,11 @@ public class ControllerNewAccount {
 	// Reference for the in-memory database so this package has access
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
+	protected static void displayInputErrorAlert(String content) {
+		ViewNewAccount.alertInvalidInputError.setContentText(content);
+		ViewNewAccount.alertInvalidInputError.showAndWait();
+	}
+	
 	/**********
 	 * <p> Method: public doCreateUser() </p>
 	 * 
@@ -66,11 +72,40 @@ public class ControllerNewAccount {
 		// that the two password fields are the same before we do anything with it.)
 		String username = ViewNewAccount.text_Username.getText();
 		String password = ViewNewAccount.text_Password1.getText();
+		String password2 = ViewNewAccount.text_Password2.getText();
 		
 		// Display key information to the log
 		System.out.println("** Account for Username: " + username + "; theInvitationCode: "+
 				ViewNewAccount.theInvitationCode + "; email address: " + 
 				ViewNewAccount.emailAddress + "; Role: " + ViewNewAccount.theRole);
+		
+		String usernameLength = inputValidation.ValidateInputLength.checkInputLength(username);
+		String password1Length = inputValidation.ValidateInputLength.checkInputLength(password);
+		String password2Length = inputValidation.ValidateInputLength.checkInputLength(password2);
+		
+		if (usernameLength.length() != 0) {
+			displayInputErrorAlert(usernameLength);
+			return;
+		} else if (password1Length.length() != 0) {
+			displayInputErrorAlert(password1Length);
+			return;
+		} else if (password2Length.length() != 0){
+			displayInputErrorAlert(password2Length);
+			return;
+		}
+		
+		String validUserName = inputValidation.ValidateUserNameInput.checkForValidUserName(username);
+		String validPassword = inputValidation.ValidatePasswordInput.evaluatePassword(password);
+		if (validUserName.length() != 0) {
+			displayInputErrorAlert(validUserName);
+			ViewNewAccount.text_Username.setText("");
+			return;
+		} else if (validPassword.length() != 0) {
+			displayInputErrorAlert(validPassword);
+			ViewNewAccount.text_Password1.setText("");
+			ViewNewAccount.text_Password2.setText("");
+			return;
+		}
 		
 		// Initialize local variables that will be created during this process
 		int roleCode = 0;

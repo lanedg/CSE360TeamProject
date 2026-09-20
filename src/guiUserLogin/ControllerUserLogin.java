@@ -2,6 +2,7 @@ package guiUserLogin;
 
 import database.Database;
 import entityClasses.User;
+import guiNewAccount.ViewNewAccount;
 import javafx.stage.Stage;
 
 /*******
@@ -51,6 +52,11 @@ public class ControllerUserLogin {
 
 	private static Stage theStage;	
 	
+	protected static void displayInputErrorAlert(String content) {
+		ViewUserLogin.alertInvalidInputError.setContentText(content);
+		ViewUserLogin.alertInvalidInputError.showAndWait();
+	}
+	
 	/**********
 	 * <p> Method: public doLogin() </p>
 	 * 
@@ -67,6 +73,19 @@ public class ControllerUserLogin {
 		String username = ViewUserLogin.text_Username.getText();
 		String password = ViewUserLogin.text_Password.getText();
     	boolean loginResult = false;
+    	
+    	String usernameLength = inputValidation.ValidateInputLength.checkInputLength(username);
+    	String passwordLength = inputValidation.ValidateInputLength.checkInputLength(password);
+    	
+    	if (usernameLength.length() != 0) {
+			displayInputErrorAlert(usernameLength);
+			return;
+		} else if (passwordLength.length() != 0) {
+			displayInputErrorAlert(passwordLength);
+			return;
+		}
+    	
+    	
     	
 		// Fetch the user and verify the username
      	if (theDatabase.getUserAccountDetails(username) == false) {
