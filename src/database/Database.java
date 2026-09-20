@@ -1177,6 +1177,11 @@ public class Database {
 	 *  
 	 */
 
+
+	public boolean getCurrentNewRole2() {
+		return currentNewRole2;
+	};
+	
 	
 	/*******
 	 * <p> Method: ArrayList<User> getAllUsers() </p>
@@ -1212,9 +1217,6 @@ public class Database {
 	}
 	
 
-	public boolean getCurrentNewRole2() {
-		return currentNewRole2;
-	};
 	
 	public String getRoles() {
     	java.util.ArrayList<String> rolesList = new java.util.ArrayList<>();
