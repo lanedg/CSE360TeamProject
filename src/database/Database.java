@@ -264,9 +264,12 @@ public class Database {
 		String query = "SELECT userName FROM userDB";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			ResultSet rs = pstmt.executeQuery();
+			int count = 0;
 			while (rs.next()) {
+				count++;
 				userList.add(rs.getString("userName"));
 			}
+			System.out.println("Total rows retrieved form ResultSet: " + count);
 		} catch (SQLException e) {
 			return null;
 		}

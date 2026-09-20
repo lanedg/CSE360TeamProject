@@ -141,8 +141,13 @@ public class ViewAddRemoveRoles {
 		// singleton instance of this class
 		if (theView == null) theView = new ViewAddRemoveRoles();
 		
+		//Repopulate UserList
+		List<String> userList = theDatabase.getUserList();	
+		combobox_SelectUser.setItems(FXCollections.observableArrayList(userList));
+		
 		// Default to no user selected
 		combobox_SelectUser.getSelectionModel().select(0);
+		
 		
 		// Populate the dynamic aspects of the GUI with the data from the user and the current
 		// state of the system.  This page is different from the others.  Since there are two 
