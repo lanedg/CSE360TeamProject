@@ -259,4 +259,47 @@ public class User {
     	if (role2) numRoles++;
     	return numRoles;
     }
+    
+    /*****
+     * <p> Method: String getName() </p>
+     * 
+     * <p> Description: Getter that combines first, middle, and last name. </p>
+     */
+    public String getName() {
+    	StringBuilder fullName = new StringBuilder();
+    	if (firstName != null && !firstName.isEmpty()) {
+    		fullName.append(firstName);
+    	}
+    	if (middleName != null && !middleName.isEmpty()) {
+    		if (fullName.length() > 0) fullName.append(" ");
+    		fullName.append(middleName);
+    	}
+    	if (lastName != null && !lastName.isEmpty()) {
+    		if (fullName.length() > 0) fullName.append(" ");
+    		fullName.append(lastName);
+    	}
+    	
+    	if (fullName.toString().trim().isEmpty()) {
+    		return "Not Provided";
+    	}
+    	return fullName.toString().trim();
+    	
+    	
+    }
+    
+    /*****
+     * <p> Method: String getRoles() </p>
+     * 
+     * <p> Description: Getter that formats the boolean roles into a string. </p>
+     */
+    public String getRoles() {
+    	java.util.ArrayList<String> rolesList = new java.util.ArrayList<>();
+    	if (adminRole) rolesList.add("Admin");
+    	if (role1) rolesList.add("Role 1");
+    	if (role2) rolesList.add("Role 2");
+    	
+    	String combinedRoles = String.join(", ", rolesList);
+    	if (combinedRoles.isEmpty()) return "No Roles Assigned";
+    	return combinedRoles;
+    }
 }
