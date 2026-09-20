@@ -1177,11 +1177,60 @@ public class Database {
 	 * </p>
 	 * 
 	 * @return true if this user plays a Reviewer role, else false
-	 * 
+	 *  
 	 */
+
+
 	public boolean getCurrentNewRole2() {
 		return currentNewRole2;
 	};
+	
+	
+	/*******
+	 * <p> Method: ArrayList<User> getAllUsers() </p>
+	 * 
+	 * <p> Description: Retrieves all users from the userDB and packages them into an ArrayList
+	 *     for display in the Admin List Users table. </p>
+	 */
+	
+	public ArrayList<User> getAllUsers() {
+		ArrayList<User> allUsersList = new ArrayList<>();	
+		String query = "SELECT * FROM userDB";
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			ResultSet rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				User tableUser = new User();
+				tableUser.setUserName(rs.getString("userName"));
+				tableUser.setFirstName(rs.getString("firstName"));
+				tableUser.setMiddleName(rs.getString("middleName"));
+				tableUser.setLastName(rs.getString("lastName"));
+				tableUser.setEmailAddress(rs.getString("emailAddress"));
+				tableUser.setAdminRole(rs.getBoolean("adminRole"));
+				tableUser.setRole1User(rs.getBoolean("newRole1"));
+				tableUser.setRole2User(rs.getBoolean("newRole2"));
+				
+				allUsersList.add(tableUser);
+			}
+		} catch (SQLException e) {
+			System.err.println("Error fetching all users for the List view: " + e.getMessage());
+		}
+		return allUsersList;
+	}
+	
+
+	
+	public String getRoles() {
+    	java.util.ArrayList<String> rolesList = new java.util.ArrayList<>();
+    	if (currentAdminRole) rolesList.add("Admin");
+    	if (currentNewRole1) rolesList.add("Role 1");
+    	if (currentNewRole2) rolesList.add("Role 2");
+    	
+    	String combinedRoles = String.join(", ", rolesList);
+    	if (combinedRoles.isEmpty()) return "No Roles Assigned";
+    	return combinedRoles;
+    }
 
 	/*******
 	 * <p>
@@ -1195,6 +1244,8 @@ public class Database {
 	 * @throws SQLException if there is an issues accessing the database.
 	 * 
 	 */
+	
+	
 	// Dumps the database.
 	public void dump() throws SQLException {
 		String query = "SELECT * FROM userDB";
@@ -1208,7 +1259,6 @@ public class Database {
 		}
 		resultSet.close();
 	}
-
 	/*******
 	 * <p>
 	 * Method: void closeConnection()
@@ -1219,6 +1269,7 @@ public class Database {
 	 * </p>
 	 * 
 	 */
+	
 	// Closes the database statement and connection.
 	public void closeConnection() {
 		try {
