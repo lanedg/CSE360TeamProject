@@ -78,4 +78,30 @@ public class LessonsLearnedHelper {
     	}
     	return 0;
     }
+    
+    public static LessonsLearned getLesson(int id) throws SQLException {
+        String sql = "SELECT * FROM lessons_learned WHERE id = ?";
+    try (Connection cnct = getConnection();
+         PreparedStatement statement = cnct.prepareStatement(sql)) {
+
+        statement.setInt(1, id);
+
+        try (ResultSet set = statement.executeQuery()) {
+            if (!set.next()) { return null; }
+
+            LessonsLearned lesson = new LessonsLearned(set.getString("author_id"), set.getString("lesson_title"));
+
+            lesson.setId(set.getInt("id"));
+            lesson.setLessonTitleLocked(set.getBoolean("lesson_title_locked"));
+            lesson.setExperienceDescription(set.getString("experience_description"));
+            lesson.setExperienceDescriptionLocked(set.getBoolean("experience_description_locked"));
+            lesson.setHoursSpent(set.getDouble("hours_spent"));
+            lesson.setHoursSpentLocked(set.getBoolean("hours_spent_locked"));
+            lesson.setEffortUsed(set.getString("effort_used"));
+            lesson.setEffortUsedLocked(set.getBoolean("effort_used_locked"));
+
+            return lesson;
+        }
+    }
+    }
 }
