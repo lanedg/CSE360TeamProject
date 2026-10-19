@@ -156,5 +156,32 @@ public static boolean deleteLesson(int id) {
     }
     return false;
 }
+
+// Id return tester
+/*******
+ * <p> Method: int getHighestLessonId() </p>
+ * 
+ * <p> Description: Return the largest lesson id currently in the table.  The testing
+ *		automation uses this to find the lesson it has just created, as createLesson does
+ *		not return the id the database assigned.</p>
+ * 
+ * @return the highest lesson id, or 0 when the table is empty
+ * 
+ */
+public static int getHighestLessonId() {
+    String sql = "SELECT MAX(id) FROM lessons_learned";
+    try (Connection conn = getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql)) {
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        System.err.println("Error finding the highest lesson id: " + e.getMessage());
+    }
+    return 0;
+}
+
+
 }
 
