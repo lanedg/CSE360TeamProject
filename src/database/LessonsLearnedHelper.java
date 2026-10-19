@@ -65,6 +65,41 @@ public class LessonsLearnedHelper {
     	}
     }
     
+    public static boolean updateLesson(LessonsLearned lesson) {
+        String sql = "UPDATE lessons_learned SET author_id = ?, lesson_title = ?, lesson_title_locked = ?, " +
+                     "experience_description = ?, experience_description_locked = ?, hours_spent = ?, hours_spent_locked = ?, " +
+                     "effort_used = ?, effort_used_locked = ? WHERE id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, lesson.getAuthorID());
+            pstmt.setString(2, lesson.getLessonTitle());
+            pstmt.setBoolean(3, lesson.isLessonTitleLocked());
+            pstmt.setString(4, lesson.getExperienceDescription());
+            pstmt.setBoolean(5, lesson.isExperienceDescriptionLocked());
+            pstmt.setDouble(6, lesson.getHoursSpent());
+            pstmt.setBoolean(7, lesson.isHoursSpentLocked());
+            pstmt.setString(8, lesson.getEffortUsed());
+            pstmt.setBoolean(9, lesson.isEffortUsedLocked());
+            pstmt.setInt(10, lesson.getId()); // needs the ID to locate the specific record
+            
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Lesson successfully updated in the database.");
+                return true;
+            } else {
+                System.out.println("Lesson ID not found. Update failed.");
+                return false;
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Failed to update lesson: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    
     public static int getLessonCount() {
     	String sql = "SELECT COUNT(*) FROM lessons_learned";
     	try (Connection conn = getConnection();
