@@ -39,7 +39,7 @@ public class LessonsLearnedHelper {
         }
     }
     
-    public static void createLesson(LessonsLearned lesson) {
+    public static boolean createLesson(LessonsLearned lesson) {
     	String sql = "INSERT INTO lessons_learned (author_id, lesson_title, lesson_title_locked, " +
     				 "experience_description, experience_description_locked, hours_spent, hours_spent_locked, " +
     				 "effort_used, effort_used_locked ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -59,9 +59,11 @@ public class LessonsLearnedHelper {
             
             pstmt.executeUpdate();
             System.out.println("Lesson succesfully saved to the database.");
+            return true;
     		
     	} catch (SQLException e) {
     		System.err.println("Failed to insert lesson: " + e.getMessage());
+    		return false;
     	}
     }
     
@@ -146,4 +148,135 @@ public class LessonsLearnedHelper {
         
         return userLessons;
     }
+
+// Below - Beck
+
+/*******
+ * <p> Method: boolean isLessonLocked(int id) </p>
+ * 
+ * <p> Description: Determine whether any field of the specified lesson has been locked by
+ *		another role.  A contributor is not allowed to delete a lesson that is locked or that
+ *		has a locked field, so this check is made before any deletion is attempted.</p>
+ * 
+ * @param id is the unique id of the lesson being checked
+ * 
+ * @return true if one or more fields of the lesson are locked, else false
+ * 
+ */
+public static boolean isLessonLocked(int id) {
+    String sql = "SELECT lesson_title_locked, experience_description_locked, " +
+                 "hours_spent_locked, effort_used_locked FROM lessons_learned WHERE id = ?";
+
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, id);
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            // The lesson may not be deleted if any one of its fields has been locked
+            return rs.getBoolean("lesson_title_locked")
+                    || rs.getBoolean("experience_description_locked")
+                    || rs.getBoolean("hours_spent_locked")
+                    || rs.getBoolean("effort_used_locked");
+        }
+    } catch (SQLException e) {
+        System.err.println("Error checking lesson lock state: " + e.getMessage());
+    }
+    return false;        // No such lesson, or an error occurred
 }
+
+
+/*******
+ * <p> Method: boolean deleteLesson(int id) </p>
+ * 
+ * <p> Description: Remove the specified lesson learned from the database.  The deletion is
+ *		refused when the lesson is locked or has a locked field, as the Contributor user
+ *		story does not permit a contributor to delete such a lesson.</p>
+ * 
+ * @param id is the unique id of the lesson to be removed
+ * 
+ * @return true if the lesson was removed, else false
+ * 
+ */
+public static boolean deleteLesson(int id) {
+    // A locked lesson may not be deleted by its contributor
+    if (isLessonLocked(id)) {
+        System.out.println("Lesson " + id + " is locked and cannot be deleted.");
+        return false;
+    }
+
+    String sql = "DELETE FROM lessons_learned WHERE id = ?";
+
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, id);
+
+        // executeUpdate returns the number of rows removed, so a value above zero means
+        // a lesson with this id was found and deleted
+        if (pstmt.executeUpdate() > 0) {
+            System.out.println("Lesson successfully deleted from the database.");
+            return true;
+        }
+        System.out.println("No lesson found with id " + id + ".");
+    } catch (SQLException e) {
+        System.err.println("Failed to delete lesson: " + e.getMessage());
+    }
+    return false;
+ }
+    
+    public static LessonsLearned getLesson(int id) throws SQLException {
+        String sql = "SELECT * FROM lessons_learned WHERE id = ?";
+    try (Connection cnct = getConnection();
+         PreparedStatement statement = cnct.prepareStatement(sql)) {
+
+        statement.setInt(1, id);
+
+        try (ResultSet set = statement.executeQuery()) {
+            if (!set.next()) { return null; }
+
+            LessonsLearned lesson = new LessonsLearned(set.getString("author_id"), set.getString("lesson_title"));
+
+            lesson.setId(set.getInt("id"));
+            lesson.setLessonTitleLocked(set.getBoolean("lesson_title_locked"));
+            lesson.setExperienceDescription(set.getString("experience_description"));
+            lesson.setExperienceDescriptionLocked(set.getBoolean("experience_description_locked"));
+            lesson.setHoursSpent(set.getDouble("hours_spent"));
+            lesson.setHoursSpentLocked(set.getBoolean("hours_spent_locked"));
+            lesson.setEffortUsed(set.getString("effort_used"));
+            lesson.setEffortUsedLocked(set.getBoolean("effort_used_locked"));
+
+            return lesson;
+        }
+    }
+}
+
+// Id return tester
+/*******
+ * <p> Method: int getHighestLessonId() </p>
+ * 
+ * <p> Description: Return the largest lesson id currently in the table.  The testing
+ *		automation uses this to find the lesson it has just created, as createLesson does
+ *		not return the id the database assigned.</p>
+ * 
+ * @return the highest lesson id, or 0 when the table is empty
+ * 
+ */
+public static int getHighestLessonId() {
+    String sql = "SELECT MAX(id) FROM lessons_learned";
+    try (Connection conn = getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql)) {
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        System.err.println("Error finding the highest lesson id: " + e.getMessage());
+    }
+    return 0;
+}
+
+
+}
+
