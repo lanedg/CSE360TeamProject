@@ -113,4 +113,37 @@ public class LessonsLearnedHelper {
     	}
     	return 0;
     }
+    
+    public static entityClasses.LessonsLearnedList getLessonsForAuthor(String authorId) {
+        entityClasses.LessonsLearnedList userLessons = new entityClasses.LessonsLearnedList();
+        String sql = "SELECT * FROM lessons_learned WHERE author_id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, authorId);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                entityClasses.LessonsLearned lesson = new entityClasses.LessonsLearned(
+                    rs.getString("author_id"), 
+                    rs.getString("lesson_title")
+                );
+                lesson.setId(rs.getInt("id"));
+                lesson.setLessonTitleLocked(rs.getBoolean("lesson_title_locked"));
+                lesson.setExperienceDescription(rs.getString("experience_description"));
+                lesson.setExperienceDescriptionLocked(rs.getBoolean("experience_description_locked"));
+                lesson.setHoursSpent(rs.getDouble("hours_spent"));
+                lesson.setHoursSpentLocked(rs.getBoolean("hours_spent_locked"));
+                lesson.setEffortUsed(rs.getString("effort_used"));
+                lesson.setEffortUsedLocked(rs.getBoolean("effort_used_locked"));
+                
+                userLessons.addLesson(lesson);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving lessons for author: " + e.getMessage());
+        }
+        
+        return userLessons;
+    }
 }
