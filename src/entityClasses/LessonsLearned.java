@@ -12,7 +12,7 @@ public class LessonsLearned {
 	private boolean experienceDescriptionLocked;
 	private double hoursSpent; // Amount of time spent on the task / lesson in hours
 	private boolean hoursSpentLocked;
-	private String effortUsed; // String where users can specify the amount of effort used by various team members
+	private String effortUsed; 
 	private boolean effortUsedLocked;
 	
 	public LessonsLearned(String authorID, String lessonTitle) {
