@@ -39,7 +39,7 @@ public class LessonsLearnedHelper {
         }
     }
     
-    public static void createLesson(LessonsLearned lesson) {
+    public static boolean createLesson(LessonsLearned lesson) {
     	String sql = "INSERT INTO lessons_learned (author_id, lesson_title, lesson_title_locked, " +
     				 "experience_description, experience_description_locked, hours_spent, hours_spent_locked, " +
     				 "effort_used, effort_used_locked ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -59,9 +59,11 @@ public class LessonsLearnedHelper {
             
             pstmt.executeUpdate();
             System.out.println("Lesson succesfully saved to the database.");
+            return true;
     		
     	} catch (SQLException e) {
     		System.err.println("Failed to insert lesson: " + e.getMessage());
+    		return false;
     	}
     }
     
