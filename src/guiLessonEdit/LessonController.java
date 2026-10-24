@@ -7,8 +7,17 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import java.sql.SQLException;
 
-class LessonController { 
+/**
+ * Handles the Save button and messages in the Edit Lesson window.
+*/
+public class LessonController { 
 
+	/**
+	 * Saves the entered changes or shows an error if saving fails.
+	 *
+	 * @param view the Edit Lesson window
+	 * @param user the logged-in Contributor
+	 */
 	static void handleSave(ViewLesson view, User user) {
 		try { view.editor.saveLesson(user, view.editor.lesson.getId(), view.title.getText(), view.experience.getText(), view.time.getText(), view.effort.getText()); }
 		catch (IllegalArgumentException error) { showError(view.window, error.getMessage()); return; } 
@@ -22,6 +31,12 @@ class LessonController {
 		alert.showAndWait();
 	}
 
+	/**
+	 * Shows an error message in a popup.
+	 *
+	 * @param window the window that owns the popup
+	 * @param error the message to display
+	 */
 	static void showError(Stage window, String error) {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.initOwner(window);
@@ -32,6 +47,11 @@ class LessonController {
 		alert.showAndWait();
 	}
 
+	/**
+	 * Shows a message when a user clicks a locked field.
+	 *
+	 * @param window the window that owns the popup
+	 */
 	static void blockedInterraction(Stage window) {
 		showError(window, "Field is locked, higher privileges required");
 	}
