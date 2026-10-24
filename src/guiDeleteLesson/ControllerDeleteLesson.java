@@ -44,8 +44,8 @@ public class ControllerDeleteLesson {
 	public ControllerDeleteLesson() {
 	}
 
-	// The id of the lesson currently selected in the ComboBox.  A value of -1 means that no
-	// lesson has been selected, which is the case when the prompt is showing.
+	/** The id of the lesson currently selected in the ComboBox.  A value of -1 means that no
+	 * lesson has been selected, which is the case when the prompt is showing. */
 	private static int theSelectedLessonId = -1;
 
 

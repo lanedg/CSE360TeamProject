@@ -45,7 +45,10 @@ public class ViewDeleteLesson {
 
 	// These are the application values required by the user interface
 
+	/** The width of the application window, taken from the main application class */
 	private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
+
+	/** The height of the application window, taken from the main application class */
 	private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT;
 
 
@@ -53,11 +56,17 @@ public class ViewDeleteLesson {
 
 	// GUI Area 1: It informs the user about the purpose of this page, whose account is being
 	// used, and a button to allow this user to update the account settings.
+
+	/** The title shown at the top of the page */
 	protected static Label label_PageTitle = new Label();
+
+	/** The line that states which user is currently logged in */
 	protected static Label label_UserDetails = new Label();
+
+	/** The button that takes this user to the account update page */
 	protected static Button button_UpdateThisUser = new Button("Account Update");
 
-	// This is a separator and it is used to partition the GUI for various tasks
+	/** The separator that partitions the title area from the rest of the page */
 	protected static Line line_Separator1 = new Line(20, 95, width-20, 95);
 
 	// When no lesson has been selected, only Area 2a is shown.  If a lesson in the ComboBox in
@@ -66,37 +75,60 @@ public class ViewDeleteLesson {
 	// Area 2a: This allows the contributor to select one of the lessons they have added as the
 	// first step in deleting it.  The act of selecting a lesson causes the change in the GUI.
 	// The contributor does not need to push a button to make this happen.
+
+	/** The prompt that asks the contributor to choose a lesson */
 	protected static Label label_SelectLesson = new Label("Select a lesson to be deleted:");
+
+	/** The list of this contributor's lessons, from which one is chosen for deletion */
 	protected static ComboBox <String> combobox_SelectLesson = new ComboBox <String>();
 
 	// Area 2b: When a lesson has been selected these widgets are shown and can be used
+
+	/** Reports whether the selected lesson is locked and may therefore not be deleted */
 	protected static Label label_LessonStatus = new Label();
+
+	/** The button that starts the deletion of the selected lesson */
 	protected static Button button_DeleteLesson = new Button("Delete This Lesson");
 
-	// This is a separator and it is used to partition the GUI for various tasks
+	/** The separator that partitions the page from the buttons at the bottom */
 	protected static Line line_Separator4 = new Line(20, 525, width-20, 525);
 
 	// GUI Area 3: This is the last of the GUI areas.  It is used for quitting the application,
 	// logging out, and returning to the page that invoked this one.
+
+	/** The button that returns the contributor to the page that invoked this one */
 	protected static Button button_Return = new Button("Return");
+
+	/** The button that logs this user out and returns to the login page */
 	protected static Button button_Logout = new Button("Logout");
+
+	/** The button that terminates the application */
 	protected static Button button_Quit = new Button("Quit");
 
 	// This is the end of the GUI objects for the page.
 
 	// These attributes are used to configure the page and populate it with this user's
 	// information
-	private static ViewDeleteLesson theView;	// Used to determine if instantiation of the class
-												// is needed
 
-	protected static Stage theStage;			// The Stage that JavaFX has established for us
-	protected static Pane theRootPane;			// The Pane that holds all the GUI widgets
-	protected static User theUser;				// The current user of the application
+	/** The singleton instance of this class, used to determine if instantiation is needed */
+	private static ViewDeleteLesson theView;
 
-	public static Scene theDeleteLessonScene = null;	// The Scene each invocation populates
-	protected static String theSelectedLesson = "";		// The lesson that is to be deleted
+	/** The Stage that JavaFX has established for us */
+	protected static Stage theStage;
 
-	// The first entry of the ComboBox is a prompt rather than one of the contributor's lessons
+	/** The Pane that holds all the GUI widgets */
+	protected static Pane theRootPane;
+
+	/** The current user of the application */
+	protected static User theUser;
+
+	/** The Scene each invocation populates */
+	public static Scene theDeleteLessonScene = null;
+
+	/** The entry of the ComboBox that is currently selected */
+	protected static String theSelectedLesson = "";
+
+	/** The first entry of the ComboBox is a prompt rather than one of the contributor's lessons */
 	protected static final String SELECT_PROMPT = "<Select a Lesson>";
 
 
