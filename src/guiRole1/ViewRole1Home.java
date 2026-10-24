@@ -55,6 +55,9 @@ public class ViewRole1Home {
 	// GUI ARea 2: This is a stub, so there are no widgets here.  For an actual role page, this are
 	// would contain the widgets needed for the user to play the assigned role.
 	
+	// Place this near the other button setups (GUI Area 2 is a good spot)
+	
+	
 	
 	
 	// This is a separator and it is used to partition the GUI for various tasks
@@ -64,7 +67,7 @@ public class ViewRole1Home {
 	// logging out.
 	protected static Button button_Logout = new Button("Logout");
 	protected static Button button_Quit = new Button("Quit");
-
+	protected static Button button_ViewLessons = new Button("View My Lessons");
 	// This is the end of the GUI objects for the page.
 	
 	// These attributes are used to configure the page and populate it with this user's information
@@ -165,7 +168,9 @@ public class ViewRole1Home {
 		
 		// GUI Area 2
 		
-			// This is a stub, so this area is empty
+		setupButtonUI(button_ViewLessons, "Dialog", 18, 200, Pos.CENTER, 300, 200);
+		button_ViewLessons.setOnAction(e -> {guiListLessons.ViewListLessons.displayListLessons(theStage, theUser);
+		});
 		
 		
 		// GUI Area 3
@@ -180,6 +185,7 @@ public class ViewRole1Home {
 		// Place all of the widget items into the Root Pane's list of children
          theRootPane.getChildren().addAll(
 			label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1,
+			button_ViewLessons,
 	        line_Separator4, button_Logout, button_Quit);
 }
 	
