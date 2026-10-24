@@ -24,6 +24,7 @@ public class ControllerListLessons {
      * 
      * @param keyword The string entered by the user in the search field
      */
+	
     protected static void performSearch(String keyword) {
         LessonsLearnedList filteredList = ViewListLessons.fullList.searchByKeyword(keyword);
         ViewListLessons.updateListView(filteredList);
@@ -38,6 +39,7 @@ public class ControllerListLessons {
      * 
      * @param selectedLesson The string representation of the lesson selected from the UI list view
      */
+    
     protected static void performEdit(String selectedLesson) {
     	if (selectedLesson != null) {
             String idString = selectedLesson.split(" ")[1]; 
@@ -58,6 +60,7 @@ public class ControllerListLessons {
      * <p> Description: Returns the user to the Contributor Home Page by closing the 
      * list view and reloading the Role 1 Home Page GUI. </p>
      */
+    
     protected static void performBack() {
         // Returns the user to the Contributor Home Page (Update package name if they renamed guiRole1)
         guiRole1.ViewRole1Home.displayRole1Home(ViewListLessons.theStage, ViewListLessons.theUser);
