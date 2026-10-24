@@ -4,12 +4,32 @@ import database.Database;
 import entityClasses.LessonsLearned;
 import database.LessonsLearnedHelper;
 
+/*******
+ * <p> Title: ControllerContributorCreateLesson Class. </p>
+ * 
+ * <p> Description: The controller class for creating a new lesson as a contributor. 
+ * Handles window repainting, validating and saving lesson inputs to the database, 
+ * navigation, user logout, and application termination actions.</p>
+ * 
+ * @author Lane Gebbie
+ * 
+ * @version 1.00		2026-10-21 Initial Version
+ *  
+ */
+
+
 public class ControllerContributorCreateLesson {
 	public ControllerContributorCreateLesson() {
     }
     
     private static Database theDatabase = applicationMain.FoundationsMain.database;		
 
+    /**********
+     * <p> Method: repaintTheWindow() </p>
+     * 
+     * <p> Description: Clears the root pane and adds all updated UI components for the 
+     * create lesson page, then sets and displays the scene on the stage. </p>
+     */
     protected static void repaintTheWindow() {
         ViewContributorCreateLesson.theRootPane.getChildren().clear();
         
@@ -39,6 +59,13 @@ public class ControllerContributorCreateLesson {
         ViewContributorCreateLesson.theStage.show();
     }
     
+    /**********
+     * <p> Method: performSaveLesson() </p>
+     * 
+     * <p> Description: Validates user input fields for the lesson title, description, 
+     * hours spent, and effort used. If validation succeeds, instantiates a new 
+     * LessonsLearned entity[cite: 1] and saves it to the database via the helper. </p>
+     */
     protected static void performSaveLesson() {
         String title = ViewContributorCreateLesson.textfield_LessonTitle.getText().trim();
         String description = ViewContributorCreateLesson.textarea_ExperienceDesc.getText().trim();
@@ -87,14 +114,30 @@ public class ControllerContributorCreateLesson {
         }
     }
     
+    /**********
+     * <p> Method: performReturn() </p>
+     * 
+     * <p> Description: Returns the user back to the Role1 Home page view. </p>
+     */
     protected static void performReturn() {
     	guiRole1.ViewRole1Home.displayRole1Home(ViewContributorCreateLesson.theStage, ViewContributorCreateLesson.theUser);
     }
     
+    /**********
+     * <p> Method: performLogout() </p>
+     * 
+     * <p> Description: Logs the current user out of the application and transitions 
+     * to the user login view. </p>
+     */
     protected static void performLogout() {
         guiUserLogin.ViewUserLogin.displayUserLogin(ViewContributorCreateLesson.theStage);
     }
     
+    /**********
+     * <p> Method: performQuit() </p>
+     * 
+     * <p> Description: Terminates the application execution. </p>
+     */
     protected static void performQuit() {
         System.exit(0);
     }

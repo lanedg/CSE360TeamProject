@@ -14,9 +14,16 @@ import database.Database;
 import entityClasses.User;
 
 /*******
- * <p> Title: ViewCreateLesson Class. </p>
+ * <p> Title: ViewContributorCreateLesson Class. </p>
  * 
- * <p> Description: Class for the GUI for creating a new class as a Contributor</p>
+ * <p> Description: The Java/FX-based view class for creating a new lesson as a Contributor. 
+ * Provides input fields for lesson title, experience description, hours spent, and effort used, 
+ * along with navigation and action buttons.</p>
+ * 
+ * @author Lane Gebbie
+ * 
+ * @version 1.00		2026-10-21 Initial version
+ *  
  */
 public class ViewContributorCreateLesson {
 	private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
@@ -60,6 +67,13 @@ public class ViewContributorCreateLesson {
     
     /**********
      * <p> Method: displayCreateLesson(Stage ps, User user) </p>
+     * 
+     * <p> Description: Single entry point from outside this package to display the 
+     * Create Lesson page. Initializes the stage and user references, clears previous inputs, 
+     * and repaints the window.</p>
+     * 
+     * @param ps specifies the JavaFX Stage to be used for this GUI and its methods
+     * @param user specifies the User interacting with this GUI and its methods
      */
     public static void displayCreateLesson(Stage ps, User user) {
         theStage = ps;
@@ -81,7 +95,11 @@ public class ViewContributorCreateLesson {
     
     
     /**********
-     * <p> Constructor: ViewCreateLesson() </p>
+     * <p> Constructor: ViewContributorCreateLesson() </p>
+     * 
+     * <p> Description: Initializes all elements of the graphical user interface for the 
+     * create lesson page, including labels, text fields, text areas, buttons, and layouts. 
+     * Implemented as a singleton.</p>
      */
     public ViewContributorCreateLesson() {
         theRootPane = new Pane();
@@ -130,6 +148,17 @@ public class ViewContributorCreateLesson {
         button_Quit.setOnAction((_) -> { ControllerContributorCreateLesson.performQuit(); });
     }
 
+    /**********
+     * Protected local method to initialize the standard fields for a label
+     * 
+     * @param l		The Label object to be initialized
+     * @param ff	The font to be used
+     * @param f		The size of the font to be used
+     * @param w		The minimum width of the Label
+     * @param p		The alignment (e.g. left, centered, or right)
+     * @param x		The location from the left edge (x axis)
+     * @param y		The location from the top (y axis)
+     */
     private static void setupLabelUI(Label l, String ff, double f, double w, Pos p, double x, double y) {
         l.setFont(Font.font(ff, f));
         l.setMinWidth(w);
@@ -138,6 +167,17 @@ public class ViewContributorCreateLesson {
         l.setLayoutY(y);        
     }
     
+    /**********
+     * Protected local method to initialize the standard fields for a button
+     * 
+     * @param b		The Button object to be initialized
+     * @param ff	The font to be used
+     * @param f		The size of the font to be used
+     * @param w		The minimum width of the Button
+     * @param p		The alignment (e.g. left, centered, or right)
+     * @param x		The location from the left edge (x axis)
+     * @param y		The location from the top (y axis)
+     */
     protected static void setupButtonUI(Button b, String ff, double f, double w, Pos p, double x, double y) {
         b.setFont(Font.font(ff, f));
         b.setMinWidth(w);
@@ -146,6 +186,16 @@ public class ViewContributorCreateLesson {
         b.setLayoutY(y);        
     }
 
+    /**********
+     * Protected local method to initialize the standard fields for a text field
+     * 
+     * @param tf	The TextField object to be initialized
+     * @param ff	The font to be used
+     * @param f		The size of the font to be used
+     * @param w		The minimum width of the TextField
+     * @param x		The location from the left edge (x axis)
+     * @param y		The location from the top (y axis)
+     */
     protected static void setupTextFieldUI(TextField tf, String ff, double f, double w, double x, double y) {
         tf.setStyle("-fx-font: " + f + " " + ff + ";");
         tf.setMinWidth(w);
