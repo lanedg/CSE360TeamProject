@@ -55,6 +55,9 @@ public class ViewRole1Home {
 	// GUI ARea 2: This is a stub, so there are no widgets here.  For an actual role page, this are
 	// would contain the widgets needed for the user to play the assigned role.
 	
+	// Place this near the other button setups (GUI Area 2 is a good spot)
+	
+	
 	
 	
 	// This is a separator and it is used to partition the GUI for various tasks
@@ -64,7 +67,6 @@ public class ViewRole1Home {
 	// logging out.
 	protected static Button button_Logout = new Button("Logout");
 	protected static Button button_Quit = new Button("Quit");
-
 	// This is the end of the GUI objects for the page.
 	
 	// These attributes are used to configure the page and populate it with this user's information
@@ -165,7 +167,6 @@ public class ViewRole1Home {
 		
 		// GUI Area 2
 		
-			// This is a stub, so this area is empty
 		
 		
 		// GUI Area 3
