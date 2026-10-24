@@ -168,9 +168,6 @@ public class ViewRole1Home {
 		
 		// GUI Area 2
 		
-		setupButtonUI(button_ViewLessons, "Dialog", 18, 200, Pos.CENTER, 300, 200);
-		button_ViewLessons.setOnAction(e -> {guiListLessons.ViewListLessons.displayListLessons(theStage, theUser);
-		});
 		
 		
 		// GUI Area 3
