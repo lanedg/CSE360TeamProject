@@ -10,11 +10,13 @@ public class ControllerListLessons {
     }
 
     protected static void performEdit(String selectedLesson) {
-        if (selectedLesson != null) {
+    	if (selectedLesson != null) {
             String idString = selectedLesson.split(" ")[1]; 
             int lessonId = Integer.parseInt(idString);
             
-            System.out.println("Ready to call Farid's edit method for Lesson ID: " + lessonId);
+            guiLessonEdit.ViewLesson.editLessonGUI(ViewListLessons.theStage, ViewListLessons.theUser, lessonId);
+            ViewListLessons.fullList = database.LessonsLearnedHelper.getLessonsForAuthor(ViewListLessons.theUser.getUserName());
+            ViewListLessons.updateListView(ViewListLessons.fullList);
             
         } else {
             System.out.println("Please select a lesson to edit.");
