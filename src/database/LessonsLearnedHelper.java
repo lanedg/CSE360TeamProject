@@ -303,6 +303,34 @@ public static int getHighestLessonId() {
     return 0;
 }
 
+/***
+<p> Method: List getLessonListForAuthor(String authorID) </p>
+<p> Description: Generate a list of Strings, one for each lesson the specified contributor
+has added, in the form "id - title", starting with a prompt at the head of the list.
+Only this contributor's lessons are listed, as a contributor is unable to see the
+submissions of other contributors.</p>
+@param authorID is the username of the contributor whose lessons are to be listed
+@return a list of this contributor's lessons
+*/
+public static java.util.List<String> getLessonListForAuthor(String authorID) {
+ java.util.List<String> lessonList = new java.util.ArrayList<String>();
+ lessonList.add("<Select a Lesson>");
+
+        String sql = "SELECT id, lesson_title FROM lessons_learned WHERE author_id = ? ORDER BY id";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, authorID);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                lessonList.add(rs.getInt("id") + " - " + rs.getString("lesson_title"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching the lesson list: " + e.getMessage());
+        }
+        return lessonList;
+    }
+
 
 }
 
