@@ -67,7 +67,6 @@ public class ViewRole1Home {
 	// logging out.
 	protected static Button button_Logout = new Button("Logout");
 	protected static Button button_Quit = new Button("Quit");
-	protected static Button button_ViewLessons = new Button("View My Lessons");
 	// This is the end of the GUI objects for the page.
 	
 	// These attributes are used to configure the page and populate it with this user's information
