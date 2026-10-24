@@ -102,6 +102,18 @@ public class LessonsLearnedHelper {
         }
     }
     
+    /**
+     * Saves a Contributor's changes to the unlocked fields of their lesson.
+     *
+     * @param user the Contributor making the changes
+     * @param lesson the lesson being edited
+     * @param title the new lesson title
+     * @param experience the new experience description
+     * @param hours the new hours spent
+     * @param effort the new effort used
+     * @return true if one lesson was updated, false otherwise
+     * @throws SQLException if the database update fails
+     */
     public static boolean updateContributorLesson(entityClasses.User user, LessonsLearned lesson, String title, String experience, double hours, String effort) throws SQLException {
     	if (user == null || lesson == null || !user.getNewRole1()) return false;
     	String[] columns = {"lesson_title", "experience_description", "hours_spent", "effort_used"};

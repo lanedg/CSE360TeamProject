@@ -7,10 +7,22 @@ import applicationMain.FoundationsMain;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-class LessonModelEditor {
+/**
+ * Loads lessons, checks edits, and saves changes for Contributors.
+*/
+public class LessonModelEditor {
 
 	LessonsLearned lesson;
 
+	/**
+	 * Loads a lesson after checking the Contributor and lesson owner.
+	 *
+	 * @param user the logged-in Contributor
+	 * @param lessonID the ID of the lesson to load
+	 * @return the lesson from the database
+	 * @throws SQLException if the lesson cannot be read from the database
+	 * @throws IllegalArgumentException if access is denied or the lesson is missing
+	 */
 	LessonsLearned loadLesson(User user, int lessonID) throws SQLException {
 		if (user == null || !user.getNewRole1() || !FoundationsMain.database.loginRole1(user)) {
 			throw new IllegalArgumentException("Can't verify account");
@@ -21,6 +33,18 @@ class LessonModelEditor {
 		return lesson;
 	}
 
+	/**
+	 * Checks the input and saves changes to unlocked lesson fields.
+	 *
+	 * @param user the logged-in Contributor
+	 * @param lessonID the ID of the lesson to save
+	 * @param title the title entered in the window
+	 * @param experience the experience text entered in the window
+	 * @param time the hours spent entered as text
+	 * @param effort the effort text entered in the window
+	 * @throws SQLException if the database operation fails
+	 * @throws IllegalArgumentException if the input or edit request is invalid
+	 */
 	void saveLesson(User user, int lessonID, String title, String experience, String time, String effort) throws SQLException {
 		if (lesson == null || lesson.getId() != lessonID) throw new IllegalArgumentException("Reopen lesson");
 		LessonsLearned lesson = loadLesson(user, lessonID);
