@@ -114,12 +114,12 @@ public class ControllerAdminHome {
 	 * </p>
 	 */
 	protected static void manageInvitations() {
-		System.out.println("\n*** WARNING ***: Manage Invitations Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
-		ViewAdminHome.alertNotImplemented.setHeaderText("Manage Invitations Issue");
-		ViewAdminHome.alertNotImplemented.setContentText("Manage Invitations Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.showAndWait();
-	}
+        System.out.println("\n WARNING : Manage Invitations Not Yet Implemented");
+        ViewAdminHome.alertNotImplemented.setTitle(" WARNING ");
+        ViewAdminHome.alertNotImplemented.setHeaderText("Manage Invitations Issue");
+        ViewAdminHome.alertNotImplemented.setContentText("Manage Invitations Not Yet Implemented");
+        ViewAdminHome.alertNotImplemented.showAndWait();
+    }
 
 	/**********
 	 * <p>

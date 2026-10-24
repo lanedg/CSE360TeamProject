@@ -57,7 +57,11 @@ public class ViewRole1Home {
 	
 	// Place this near the other button setups (GUI Area 2 is a good spot)
 	
+	protected static Button button_CreateLesson = new Button("Create a Lesson");
 	
+	protected static Button button_ViewLessons = new Button("View Lessons");
+	
+	protected static Button button_DeleteLesson = new Button("Delete a Lesson");
 	
 	
 	// This is a separator and it is used to partition the GUI for various tasks
@@ -67,7 +71,6 @@ public class ViewRole1Home {
 	// logging out.
 	protected static Button button_Logout = new Button("Logout");
 	protected static Button button_Quit = new Button("Quit");
-	protected static Button button_ViewLessons = new Button("View My Lessons");
 	// This is the end of the GUI objects for the page.
 	
 	// These attributes are used to configure the page and populate it with this user's information
@@ -130,7 +133,7 @@ public class ViewRole1Home {
 		label_UserDetails.setText("User: " + theUser.getUserName());
 				
 		// Set the title for the window, display the page, and wait for the Admin to do something
-		theStage.setTitle("CSE 360 Foundations: Role1 Home Page");
+		theStage.setTitle("CSE 360 Foundations: Contributor Home Page");
 		theStage.setScene(theViewRole1HomeScene);
 		theStage.show();
 	}
@@ -168,7 +171,14 @@ public class ViewRole1Home {
 		
 		// GUI Area 2
 		
+		setupButtonUI(button_CreateLesson, "Dialog", 18, 250, Pos.CENTER, 20, 150);
+		button_CreateLesson.setOnAction((_) -> {guiContributorCreateLesson.ViewContributorCreateLesson.displayCreateLesson(theStage, theUser); });
 		
+		setupButtonUI(button_ViewLessons, "Dialog", 18, 250, Pos.CENTER, 20, 250);
+		button_ViewLessons.setOnAction((_) -> {guiListLessons.ViewListLessons.displayListLessons(theStage, theUser); });
+		
+		setupButtonUI(button_DeleteLesson, "Dialog", 18, 250, Pos.CENTER, 20, 350);
+		button_DeleteLesson.setOnAction((_) -> {guiDeleteLesson.ViewDeleteLesson.displayDeleteLesson(theStage, theUser); });
 		
 		// GUI Area 3
         setupButtonUI(button_Logout, "Dialog", 18, 250, Pos.CENTER, 20, 540);
@@ -182,7 +192,7 @@ public class ViewRole1Home {
 		// Place all of the widget items into the Root Pane's list of children
          theRootPane.getChildren().addAll(
 			label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1,
-			button_ViewLessons,
+			button_CreateLesson, button_ViewLessons, button_DeleteLesson,
 	        line_Separator4, button_Logout, button_Quit);
 }
 	
