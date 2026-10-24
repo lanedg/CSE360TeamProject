@@ -31,4 +31,7 @@ build.fxbuild
 
 #Bin files
 /bin/
-/doc/
+
+#Javadoc Files
+javadoc/
+doc/
