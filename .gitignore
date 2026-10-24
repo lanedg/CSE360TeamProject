@@ -31,3 +31,4 @@ build.fxbuild
 
 #Bin files
 /bin/
+/doc/
