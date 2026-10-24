@@ -16,6 +16,16 @@ import entityClasses.LessonsLearnedList;
 import entityClasses.User;
 import database.LessonsLearnedHelper;
 
+/*******
+ * <p> Title: ViewListLessons Class. </p>
+ * <p> Description: The JavaFX GUI for the View/List Lessons feature. 
+ * It sets up the layout, widgets, and buttons. </p>
+ * 
+ * @author Koushik Sai Chintha
+ * 
+ * @version 1.00    2026-10-24 Initial version
+ */
+
 public class ViewListLessons {
     
     private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
@@ -35,6 +45,15 @@ public class ViewListLessons {
     protected static Button button_Back = new Button("Back to Home");
 
     protected static LessonsLearnedList fullList;
+    
+    /**********
+     * <p> Method: displayListLessons(Stage ps, User user) </p>
+     * <p> Description: Displays the List Lessons page and fetches the latest 
+     * data for the current user. </p>
+     * 
+     * @param ps specifies the JavaFX Stage
+     * @param user specifies the current logged-in User
+     */
 
     public static void displayListLessons(Stage ps, User user) {
         theStage = ps;
@@ -52,6 +71,12 @@ public class ViewListLessons {
         theStage.setScene(theScene);
         theStage.show();
     }
+    
+    /**********
+     * <p> Method: ViewListLessons() </p>
+     * <p> Description: Initializes the GUI elements, including the list, 
+     * search bar, and buttons. </p>
+     */
 
     private ViewListLessons() {
         theRootPane = new Pane();
@@ -79,6 +104,13 @@ public class ViewListLessons {
 
         theRootPane.getChildren().addAll(label_Title, searchField, button_Search, listView, button_Edit, button_Back);
     }
+    
+    /**********
+     * <p> Method: updateListView(LessonsLearnedList listToDisplay) </p>
+     * <p> Description: Updates the screen to display a given list of lessons. </p>
+     * 
+     * @param listToDisplay The list of lessons to show on screen
+     */
 
     protected static void updateListView(LessonsLearnedList listToDisplay) {
         ObservableList<String> displayItems = FXCollections.observableArrayList();
@@ -87,6 +119,19 @@ public class ViewListLessons {
         }
         listView.setItems(displayItems);
     }
+    
+    /**********
+     * <p> Method: setupLabelUI(...) </p>
+     * <p> Description: Helper method to set up a Label's UI properties. </p>
+     * 
+     * @param l The Label to set up
+     * @param ff The font family
+     * @param f The font size
+     * @param w The width
+     * @param p The alignment
+     * @param x The X-axis location
+     * @param y The Y-axis location
+     */
 
     private static void setupLabelUI(Label l, String ff, double f, double w, Pos p, double x, double y){
         l.setFont(Font.font(ff, f));
@@ -96,6 +141,19 @@ public class ViewListLessons {
         l.setLayoutY(y);        
     }
 
+    /**********
+     * <p> Method: setupButtonUI(...) </p>
+     * <p> Description: Helper method to set up a Button's UI properties. </p>
+     * 
+     * @param b The Button to set up
+     * @param ff The font family
+     * @param f The font size
+     * @param w The width
+     * @param p The alignment
+     * @param x The X-axis location
+     * @param y The Y-axis location
+     */
+    
     private static void setupButtonUI(Button b, String ff, double f, double w, Pos p, double x, double y){
         b.setFont(Font.font(ff, f));
         b.setMinWidth(w);
