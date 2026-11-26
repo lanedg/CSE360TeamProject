@@ -64,6 +64,7 @@ public class ViewLesson {
 		resetButton.setOnAction(event -> populateFields());
 		closeButton.setOnAction(event -> window.close());
 		HBox buttons = new HBox(10, saveButton, resetButton, closeButton);
+		buttons.getChildren().add(0, guiTools.ContributorAI.helpButton(window, title, experience));
 		buttons.setAlignment(Pos.CENTER_RIGHT);
 		VBox form = new VBox(10, details, new Label("Title *"), title,
 			new Label("Experience"), experience, new Label("Hours spent"), time,
