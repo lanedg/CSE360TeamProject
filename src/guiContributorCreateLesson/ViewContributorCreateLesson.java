@@ -91,6 +91,9 @@ public class ViewContributorCreateLesson {
         label_UserDetails.setText("User: " + theUser.getUserName());
         
         ControllerContributorCreateLesson.repaintTheWindow();
+        Button help = guiTools.ContributorAI.helpButton(theStage, textfield_LessonTitle, textarea_ExperienceDesc);
+        setupButtonUI(help, "Dialog", 16, 115, Pos.CENTER, 435, 380);
+        theRootPane.getChildren().add(help);
     }
     
     
