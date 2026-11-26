@@ -137,6 +137,8 @@ public class ControllerAddRemoveRoles {
 			ViewAddRemoveRoles.addList.add("Role2");
 		if (!theDatabase.getCurrentViewerRole())
 			ViewAddRemoveRoles.addList.add("Viewer");
+		if (!theDatabase.getCurrentCuratorRole())
+			ViewAddRemoveRoles.addList.add("Curator");
 
 		// Create the list of roles that could be removed for the currently selected user (e.g., Do
 		// not show a role to remove that the user does not have!)
@@ -150,6 +152,8 @@ public class ControllerAddRemoveRoles {
 			ViewAddRemoveRoles.removeList.add("Role2");
 		if (theDatabase.getCurrentViewerRole())
 			ViewAddRemoveRoles.removeList.add("Viewer");
+		if (theDatabase.getCurrentCuratorRole())
+			ViewAddRemoveRoles.removeList.add("Curator");
 		
 		// Create the list or roles that the user currently has with proper use of a comma between
 		// items
@@ -188,6 +192,16 @@ public class ControllerAddRemoveRoles {
 				theCurrentRoles += ", Viewer"; 
 			else {
 				theCurrentRoles += "Viewer";
+				notTheFirst = true;
+			}
+		}
+		
+		// Curator role - It could be at the head of the list or later in the list
+		if (theDatabase.getCurrentCuratorRole()) {
+			if (notTheFirst)
+				theCurrentRoles += ", Curator"; 
+			else {
+				theCurrentRoles += "Curator";
 				notTheFirst = true;
 			}
 		}

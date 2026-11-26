@@ -77,6 +77,19 @@ public class ControllerMultipleRoleDispatch {
 			guiRole2.ViewRole2Home.displayRole2Home(
 					guiMultipleRoleDispatch.ViewMultipleRoleDispatch.theStage, 
 					guiMultipleRoleDispatch.ViewMultipleRoleDispatch.theUser);
+		// See if Viewer
+		} else if (role.compareTo("Viewer") == 0) {
+				
+			guiViewer.ViewViewerHome.displayViewerHome(
+					guiMultipleRoleDispatch.ViewMultipleRoleDispatch.theStage, 
+					guiMultipleRoleDispatch.ViewMultipleRoleDispatch.theUser);
+				
+		// See if Curator
+		} else if (role.compareTo("Curator") == 0) {
+				
+			guiCuratorHome.ViewCuratorHome.displayCuratorHome(
+					guiMultipleRoleDispatch.ViewMultipleRoleDispatch.theStage, 
+					guiMultipleRoleDispatch.ViewMultipleRoleDispatch.theUser);
 			
 		} else {
 			// Invalid role

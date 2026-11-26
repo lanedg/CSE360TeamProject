@@ -68,6 +68,7 @@ public class Database {
 	private boolean currentNewRole1;
 	private boolean currentNewRole2;
 	private boolean currentViewerRole;
+	private boolean currentCuratorRole;
 
 	/*******
 	 * <p>
@@ -133,6 +134,7 @@ public class Database {
 				+ "newRole2 BOOL DEFAULT FALSE, " + "viewerRole BOOL DEFAULT FALSE)";
 		statement.execute(userTable);
 		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS viewerRole BOOL DEFAULT FALSE");
+		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS curatorRole BOOL DEFAULT FALSE");
 		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS otp VARCHAR(8)"); //added by Farid, to store the otp
 		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS passwordResetNeeded BOOLEAN DEFAULT FALSE NOT NULL");
 		
@@ -348,6 +350,36 @@ public class Database {
 
 	/*******
 	 * <p>
+	 * Method: boolean loginCurator(User user)
+	 * </p>
+	 * 
+	 * <p>
+	 * Description: Check to see that a user with the specified username, password, and
+	 * Curator role exists in the user database.
+	 * </p>
+	 * 
+	 * @param user specifies the user being validated as playing the Curator role.
+	 * 
+	 * @return true if the specified user has been logged in as a Curator, else false.
+	 * 
+	 */
+	// Validates a curator user's login credentials.
+	public boolean loginCurator(User user) {
+		String query = "SELECT * FROM userDB WHERE userName = ? AND password = ? AND " + "curatorRole = TRUE";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, user.getUserName());
+			pstmt.setString(2, user.getPassword());
+			try (ResultSet rs = pstmt.executeQuery()) {
+				return rs.next();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/*******
+	 * <p>
 	 * Method: boolean loginRole1(User user)
 	 * </p>
 	 * 
@@ -469,6 +501,8 @@ public class Database {
 		if (user.getNewRole2())
 			numberOfRoles++;
 		if (user.getViewerRole())
+			numberOfRoles++;
+		if (user.getCuratorRole())
 			numberOfRoles++;
 		return numberOfRoles;
 	}
@@ -990,6 +1024,7 @@ public class Database {
 			currentNewRole1 = rs.getBoolean("newRole1");
 			currentNewRole2 = rs.getBoolean("newRole2");
 			currentViewerRole = rs.getBoolean("viewerRole");
+			currentCuratorRole = rs.getBoolean("curatorRole");
 			return true;
 		} catch (SQLException e) {
 			return false;
@@ -1072,6 +1107,21 @@ public class Database {
 					currentViewerRole = true;
 				else
 					currentViewerRole = false;
+				return true;
+			} catch (SQLException e) {
+				return false;
+			}
+		}
+		if (role.compareTo("Curator") == 0) {
+			String query = "UPDATE userDB SET curatorRole = ? WHERE username = ?";
+			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+				pstmt.setString(1, value);
+				pstmt.setString(2, username);
+				pstmt.executeUpdate();
+				if (value.compareTo("true") == 0)
+					currentCuratorRole = true;
+				else
+					currentCuratorRole = false;
 				return true;
 			} catch (SQLException e) {
 				return false;
@@ -1261,6 +1311,23 @@ public class Database {
 	
 	
 	/*******
+	 * <p>
+	 * Method: boolean getCurrentCuratorRole()
+	 * </p>
+	 * 
+	 * <p>
+	 * Description: Get the current user's Curator role attribute.
+	 * </p>
+	 * 
+	 * @return true if this user plays a Curator role, else false
+	 * 
+	 */
+	public boolean getCurrentCuratorRole() {
+		return currentCuratorRole;
+	}
+	
+	
+	/*******
 	 * <p> Method: ArrayList<User> getAllUsers() </p>
 	 * 
 	 * <p> Description: Retrieves all users from the userDB and packages them into an ArrayList
@@ -1285,6 +1352,7 @@ public class Database {
 				tableUser.setRole1User(rs.getBoolean("newRole1"));
 				tableUser.setRole2User(rs.getBoolean("newRole2"));
 				tableUser.setViewerRole(rs.getBoolean("viewerRole"));
+				tableUser.setCuratorRole(rs.getBoolean("curatorRole"));
 				
 				allUsersList.add(tableUser);
 			}
@@ -1302,6 +1370,7 @@ public class Database {
     	if (currentNewRole1) rolesList.add("Role 1");
     	if (currentNewRole2) rolesList.add("Role 2");
     	if (currentViewerRole) rolesList.add("Viewer");
+    	if (currentCuratorRole) rolesList.add("Curator");
     	
     	String combinedRoles = String.join(", ", rolesList);
     	if (combinedRoles.isEmpty()) return "No Roles Assigned";

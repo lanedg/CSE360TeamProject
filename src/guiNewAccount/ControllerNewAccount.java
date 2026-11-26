@@ -129,6 +129,12 @@ public class ControllerNewAccount {
 			} else if (ViewNewAccount.theRole.compareTo("Viewer") == 0) {
 				roleCode = 4;
 				user = new User(username, password, "", "", "", "", "", false, false, false, true);
+			} else if (ViewNewAccount.theRole.compareTo("Curator") == 0) {
+				roleCode = 5;
+				// The User constructor stops at the Viewer role, so the Curator role is set on
+				// the object afterwards rather than by adding a thirteenth parameter
+				user = new User(username, password, "", "", "", "", "", false, false, false, false);
+				user.setCuratorRole(true);
 			} else {
 				System.out.println(
 						"**** Trying to create a New Account for a role that does not exist!");
@@ -149,6 +155,12 @@ public class ControllerNewAccount {
                 System.err.println("*** ERROR *** Database error: " + e.getMessage());
                 e.printStackTrace();
                 System.exit(0);
+            }
+            
+            // register writes the four original role columns only, so a Curator created from an
+            // invitation has the role set here
+            if (ViewNewAccount.theRole.compareTo("Curator") == 0) {
+            	theDatabase.updateUserRole(username, "Curator", "true");
             }
             
             // The account has been set, so remove the invitation from the system
