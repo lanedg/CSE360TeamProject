@@ -40,6 +40,7 @@ public class ControllerListUsers {
 			if (u.getAdminRole()) roles += "Admin, ";
 			if (u.getNewRole1()) roles += "Role 1, ";
 			if (u.getNewRole2()) roles += "Role 2, ";
+			if (u.getViewerRole()) roles += "Viewer, ";
 			
 			if (roles.isEmpty()) {
 				roles = "None";

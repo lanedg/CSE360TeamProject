@@ -28,6 +28,7 @@ public class User {
     private boolean adminRole;
     private boolean role1;
     private boolean role2;
+    private boolean viewerRole;
     
     
     /*****
@@ -70,6 +71,22 @@ public class User {
         this.adminRole = r1;
         this.role1 = r2;
         this.role2 = r3;
+        this.viewerRole = false;
+    }
+    
+    public User(String userName, String password, String fn, String mn, String ln, String pfn, 
+    		String ea, boolean r1, boolean r2, boolean r3, boolean r4) {
+        this.userName = userName;
+        this.password = password;
+        this.firstName = fn;
+        this.middleName = mn;
+        this.lastName = ln;
+        this.preferredFirstName = pfn;
+        this.emailAddress = ea;
+        this.adminRole = r1;
+        this.role1 = r2;
+        this.role2 = r3;
+        this.viewerRole = r4;
     }
 
     
@@ -112,6 +129,20 @@ public class User {
     // Sets the role2 user.
     public void setRole2User(boolean role) {
     	this.role2=role;
+    }
+
+    
+    /*****
+     * <p> Method: void setViewerRole(boolean role) </p>
+     * 
+     * <p> Description: This setter defines the viewerRole attribute. </p>
+     * 
+     * @param role is a boolean that specifies if this user is playing the Viewer role.
+     * 
+     */
+    // Sets the viewer role.
+    public void setViewerRole(boolean role) {
+    	this.viewerRole=role;
     }
 
     
@@ -242,6 +273,18 @@ public class User {
     // Gets the current value of the role2 attribute.
     public boolean getNewRole2() { return role2; }
 
+    
+    /*****
+     * <p> Method: boolean getViewerRole() </p>
+     * 
+     * <p> Description: This getter returns the value of the viewerRole attribute. </p>
+     * 
+     * @return true if this user plays the Viewer role, else false
+     * 
+     */
+    // Gets the current value of the viewerRole attribute.
+    public boolean getViewerRole() { return viewerRole; }
+
         
     /*****
      * <p> Method: int getNumRoles() </p>
@@ -257,6 +300,7 @@ public class User {
     	if (adminRole) numRoles++;
     	if (role1) numRoles++;
     	if (role2) numRoles++;
+    	if (viewerRole) numRoles++;
     	return numRoles;
     }
     
@@ -297,6 +341,7 @@ public class User {
     	if (adminRole) rolesList.add("Admin");
     	if (role1) rolesList.add("Role 1");
     	if (role2) rolesList.add("Role 2");
+    	if (viewerRole) rolesList.add("Viewer");
     	
     	String combinedRoles = String.join(", ", rolesList);
     	if (combinedRoles.isEmpty()) return "No Roles Assigned";

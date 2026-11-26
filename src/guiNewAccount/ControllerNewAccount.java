@@ -126,6 +126,9 @@ public class ControllerNewAccount {
 			} else if (ViewNewAccount.theRole.compareTo("Role2") == 0) {
 				roleCode = 3;
 				user = new User(username, password, "", "", "", "", "", false, false, true);
+			} else if (ViewNewAccount.theRole.compareTo("Viewer") == 0) {
+				roleCode = 4;
+				user = new User(username, password, "", "", "", "", "", false, false, false, true);
 			} else {
 				System.out.println(
 						"**** Trying to create a New Account for a role that does not exist!");

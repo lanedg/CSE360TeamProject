@@ -115,7 +115,7 @@ public class ControllerUserLogin {
     			theDatabase.getCurrentMiddleName(), theDatabase.getCurrentLastName(), 
     			theDatabase.getCurrentPreferredFirstName(), theDatabase.getCurrentEmailAddress(), 
     			theDatabase.getCurrentAdminRole(), 
-    			theDatabase.getCurrentNewRole1(), theDatabase.getCurrentNewRole2());
+    			theDatabase.getCurrentNewRole1(), theDatabase.getCurrentNewRole2(), theDatabase.getCurrentViewerRole());
     	
     	// See which home page dispatch to use
 		int numberOfRoles = theDatabase.getNumberOfRoles(user);		
@@ -140,6 +140,11 @@ public class ControllerUserLogin {
 					guiRole2.ViewRole2Home.displayRole2Home(theStage, user);
 				}
 				// Other roles
+			} else if (user.getViewerRole()) {
+				loginResult = theDatabase.loginViewer(user);
+				if (loginResult) {
+					guiViewer.ViewViewerHome.displayViewerHome(theStage, user);
+				}
 			} else {
 				System.out.println("***** UserLogin goToUserHome request has an invalid role");
 			}

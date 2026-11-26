@@ -67,6 +67,7 @@ public class Database {
 	private boolean currentAdminRole;
 	private boolean currentNewRole1;
 	private boolean currentNewRole2;
+	private boolean currentViewerRole;
 
 	/*******
 	 * <p>
@@ -102,6 +103,7 @@ public class Database {
 			Class.forName(JDBC_DRIVER); // Load the JDBC driver
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement();
+			LessonsLearnedHelper.initializeTable(); // initialize lessons learned table
 			// You can use this command to clear the database and restart from fresh.
 			// statement.execute("DROP ALL OBJECTS");
 
@@ -128,8 +130,9 @@ public class Database {
 				+ "userName VARCHAR(255) UNIQUE, " + "password VARCHAR(255), " + "firstName VARCHAR(255), "
 				+ "middleName VARCHAR(255), " + "lastName VARCHAR (255), " + "preferredFirstName VARCHAR(255), "
 				+ "emailAddress VARCHAR(255), " + "adminRole BOOL DEFAULT FALSE, " + "newRole1 BOOL DEFAULT FALSE, "
-				+ "newRole2 BOOL DEFAULT FALSE)";
+				+ "newRole2 BOOL DEFAULT FALSE, " + "viewerRole BOOL DEFAULT FALSE)";
 		statement.execute(userTable);
+		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS viewerRole BOOL DEFAULT FALSE");
 		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS otp VARCHAR(8)"); //added by Farid, to store the otp
 		statement.execute("ALTER TABLE userDB ADD COLUMN IF NOT EXISTS passwordResetNeeded BOOLEAN DEFAULT FALSE NOT NULL");
 		
@@ -208,8 +211,8 @@ public class Database {
 	 */
 	public void register(User user) throws SQLException {
 		String insertUser = "INSERT INTO userDB (userName, password, firstName, middleName, "
-				+ "lastName, preferredFirstName, emailAddress, adminRole, newRole1, newRole2) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "lastName, preferredFirstName, emailAddress, adminRole, newRole1, newRole2, viewerRole) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertUser)) {
 			currentUsername = user.getUserName();
 			pstmt.setString(1, currentUsername);
@@ -240,6 +243,9 @@ public class Database {
 
 			currentNewRole2 = user.getNewRole2();
 			pstmt.setBoolean(10, currentNewRole2);
+
+			currentViewerRole = user.getViewerRole();
+			pstmt.setBoolean(11, currentViewerRole);
 
 			pstmt.executeUpdate();
 		}
@@ -303,6 +309,37 @@ public class Database {
 			pstmt.setString(2, user.getPassword());
 			ResultSet rs = pstmt.executeQuery();
 			return rs.next(); // If a row is returned, rs.next() will return true
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/*******
+	 * <p>
+	 * Method: boolean loginViewer(User user)
+	 * </p>
+	 * 
+	 * <p>
+	 * Description: Check to see that a user with the specified username, password,
+	 * and role is the same as a row in the table for the username, password, and
+	 * role.
+	 * </p>
+	 * 
+	 * @param user specifies the specific user that should be logged in playing the
+	 *             Viewer role.
+	 * 
+	 * @return true if the specified user has been logged in as a Viewer else false.
+	 * 
+	 */
+	// Validates a viewer user's login credentials.
+	public boolean loginViewer(User user) {
+		String query = "SELECT * FROM userDB WHERE userName = ? AND password = ? AND " + "viewerRole = TRUE";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, user.getUserName());
+			pstmt.setString(2, user.getPassword());
+			ResultSet rs = pstmt.executeQuery();
+			return rs.next();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -430,6 +467,8 @@ public class Database {
 		if (user.getNewRole1())
 			numberOfRoles++;
 		if (user.getNewRole2())
+			numberOfRoles++;
+		if (user.getViewerRole())
 			numberOfRoles++;
 		return numberOfRoles;
 	}
@@ -940,16 +979,17 @@ public class Database {
 			pstmt.setString(1, username);
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
-			currentUsername = rs.getString(2);
-			currentPassword = rs.getString(3);
-			currentFirstName = rs.getString(4);
-			currentMiddleName = rs.getString(5);
-			currentLastName = rs.getString(6);
-			currentPreferredFirstName = rs.getString(7);
-			currentEmailAddress = rs.getString(8);
-			currentAdminRole = rs.getBoolean(9);
-			currentNewRole1 = rs.getBoolean(10);
-			currentNewRole2 = rs.getBoolean(11);
+			currentUsername = rs.getString("userName");
+			currentPassword = rs.getString("password");
+			currentFirstName = rs.getString("firstName");
+			currentMiddleName = rs.getString("middleName");
+			currentLastName = rs.getString("lastName");
+			currentPreferredFirstName = rs.getString("preferredFirstName");
+			currentEmailAddress = rs.getString("emailAddress");
+			currentAdminRole = rs.getBoolean("adminRole");
+			currentNewRole1 = rs.getBoolean("newRole1");
+			currentNewRole2 = rs.getBoolean("newRole2");
+			currentViewerRole = rs.getBoolean("viewerRole");
 			return true;
 		} catch (SQLException e) {
 			return false;
@@ -1017,6 +1057,21 @@ public class Database {
 					currentNewRole2 = true;
 				else
 					currentNewRole2 = false;
+				return true;
+			} catch (SQLException e) {
+				return false;
+			}
+		}
+		if (role.compareTo("Viewer") == 0) {
+			String query = "UPDATE userDB SET viewerRole = ? WHERE username = ?";
+			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+				pstmt.setString(1, value);
+				pstmt.setString(2, username);
+				pstmt.executeUpdate();
+				if (value.compareTo("true") == 0)
+					currentViewerRole = true;
+				else
+					currentViewerRole = false;
 				return true;
 			} catch (SQLException e) {
 				return false;
@@ -1187,6 +1242,22 @@ public class Database {
 	public boolean getCurrentNewRole2() {
 		return currentNewRole2;
 	};
+
+	/*******
+	 * <p>
+	 * Method: boolean getCurrentViewerRole()
+	 * </p>
+	 * 
+	 * <p>
+	 * Description: Get the current user's Viewer role attribute.
+	 * </p>
+	 * 
+	 * @return true if this user plays a Viewer role, else false
+	 * 
+	 */
+	public boolean getCurrentViewerRole() {
+		return currentViewerRole;
+	};
 	
 	
 	/*******
@@ -1213,6 +1284,7 @@ public class Database {
 				tableUser.setAdminRole(rs.getBoolean("adminRole"));
 				tableUser.setRole1User(rs.getBoolean("newRole1"));
 				tableUser.setRole2User(rs.getBoolean("newRole2"));
+				tableUser.setViewerRole(rs.getBoolean("viewerRole"));
 				
 				allUsersList.add(tableUser);
 			}
@@ -1229,6 +1301,7 @@ public class Database {
     	if (currentAdminRole) rolesList.add("Admin");
     	if (currentNewRole1) rolesList.add("Role 1");
     	if (currentNewRole2) rolesList.add("Role 2");
+    	if (currentViewerRole) rolesList.add("Viewer");
     	
     	String combinedRoles = String.join(", ", rolesList);
     	if (combinedRoles.isEmpty()) return "No Roles Assigned";
