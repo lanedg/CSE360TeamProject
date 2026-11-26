@@ -447,7 +447,237 @@ public static boolean updateLessonLocks(LessonsLearned lesson) {
 
 
 
+/*******
+ * <p> Method: void initializeSearchTermsTable() </p>
+ *
+ * <p> Description: Create the table that holds the AI-assisted search terms a curator has
+ *		approved for a lesson, if that table does not already exist.
+ *
+ *		The terms are held in a table of their own rather than as a column on the lesson for
+ *		three reasons.  A lesson has many terms, and a repeating group does not fit in a
+ *		single column.  A term can be approved or withdrawn without rewriting the lesson row.
+ *		And because a term lives outside the lesson, adding or removing one never touches a
+ *		field that a curator has locked, so this epic and the locking epic do not interfere
+ *		with one another.</p>
+ *
+ * <p> Validated by: LessonSearchTermsTest.testTableIsCreated </p>
+ *
+ */
+public static void initializeSearchTermsTable() {
+    String sql = "CREATE TABLE IF NOT EXISTS lesson_search_terms (" +
+                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                 "lesson_id INT, " +
+                 "term VARCHAR(50), " +
+                 "added_by VARCHAR(255), " +
+                 "ai_suggested BOOLEAN" +
+                 ")";
 
+    try (Connection conn = getConnection();
+         Statement stmt = conn.createStatement()) {
+        stmt.execute(sql);
+        System.out.println("Database table 'lesson_search_terms' initialized successfully.");
+    } catch (SQLException e) {
+        System.err.println("Error initializing search terms table: " + e.getMessage());
+    }
+}
+
+
+/*******
+ * <p> Method: boolean addSearchTerm(int lessonId, String term, String addedBy,
+ *		boolean aiSuggested) </p>
+ *
+ * <p> Description: Attach a search term to a lesson so that a viewer whose wording differs
+ *		from the author's can still find it.  The term is stored trimmed and in lower case so
+ *		that a later search does not have to allow for the curator's capitalization, and a
+ *		term already held for that lesson is refused rather than stored twice.</p>
+ *
+ * @param lessonId		is the id of the lesson the term belongs to
+ *
+ * @param term			is the search term being attached
+ *
+ * @param addedBy		is the username of the curator approving the term
+ *
+ * @param aiSuggested	is true when the AI proposed the term, false when the curator typed it
+ *
+ * @return true if the term was stored, else false
+ *
+ * <p> Validated by: LessonSearchTermsTest.testAddTerm,
+ *		LessonSearchTermsTest.testDuplicateTermRefused </p>
+ *
+ */
+public static boolean addSearchTerm(int lessonId, String term, String addedBy,
+        boolean aiSuggested) {
+
+    // An empty term would match every search, so it is refused before the database is touched
+    if (term == null || term.trim().isEmpty()) {
+        return false;
+    }
+    String cleanTerm = term.trim().toLowerCase();
+
+    // The length limit matches the column width, so an over-long term is reported rather than
+    // being truncated or raising a value-too-long exception from H2
+    if (cleanTerm.length() > 50) {
+        System.out.println("A search term may not exceed 50 characters.");
+        return false;
+    }
+
+    if (hasSearchTerm(lessonId, cleanTerm)) {
+        System.out.println("That search term is already attached to this lesson.");
+        return false;
+    }
+
+    String sql = "INSERT INTO lesson_search_terms (lesson_id, term, added_by, ai_suggested) " +
+                 "VALUES (?, ?, ?, ?)";
+
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, lessonId);
+        pstmt.setString(2, cleanTerm);
+        pstmt.setString(3, addedBy);
+        pstmt.setBoolean(4, aiSuggested);
+
+        return pstmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.err.println("Error adding a search term: " + e.getMessage());
+        return false;
+    }
+}
+
+
+/*******
+ * <p> Method: boolean hasSearchTerm(int lessonId, String term) </p>
+ *
+ * <p> Description: Determine whether a lesson already holds the specified search term.  The
+ *		curator is shown the terms already attached before new suggestions are requested, but
+ *		this check is made in the database as well, because the AI may propose a term the
+ *		curator approved during an earlier session.</p>
+ *
+ * @param lessonId	is the id of the lesson being checked
+ *
+ * @param term		is the search term being looked for, already trimmed and in lower case
+ *
+ * @return true if the lesson already holds that term, else false
+ *
+ * <p> Validated by: LessonSearchTermsTest.testDuplicateTermRefused </p>
+ *
+ */
+public static boolean hasSearchTerm(int lessonId, String term) {
+    String sql = "SELECT COUNT(*) FROM lesson_search_terms WHERE lesson_id = ? AND term = ?";
+
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, lessonId);
+        pstmt.setString(2, term);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        System.err.println("Error checking for a search term: " + e.getMessage());
+    }
+    return false;
+}
+
+
+/*******
+ * <p> Method: List getSearchTermsForLesson(int lessonId) </p>
+ *
+ * <p> Description: Fetch the search terms currently attached to a lesson, in the order they
+ *		were approved, so the curator can see what the lesson already carries before asking
+ *		the AI for more.</p>
+ *
+ * @param lessonId is the id of the lesson whose terms are wanted
+ *
+ * @return the list of terms attached to that lesson, empty when it has none
+ *
+ * <p> Validated by: LessonSearchTermsTest.testGetTermsForLesson </p>
+ *
+ */
+public static java.util.List<String> getSearchTermsForLesson(int lessonId) {
+    java.util.List<String> termList = new ArrayList<String>();
+    String sql = "SELECT term FROM lesson_search_terms WHERE lesson_id = ? ORDER BY id";
+
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, lessonId);
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            termList.add(rs.getString("term"));
+        }
+    } catch (SQLException e) {
+        System.err.println("Error fetching the search terms: " + e.getMessage());
+    }
+    return termList;
+}
+
+
+/*******
+ * <p> Method: boolean removeSearchTerm(int lessonId, String term) </p>
+ *
+ * <p> Description: Withdraw a search term from a lesson, so a term that proves unhelpful no
+ *		longer causes the lesson to be returned by a search.  The term is matched in the same
+ *		trimmed, lower-case form in which it was stored.</p>
+ *
+ * @param lessonId	is the id of the lesson the term belongs to
+ *
+ * @param term		is the search term to be withdrawn
+ *
+ * @return true if a term was removed, else false
+ *
+ * <p> Validated by: LessonSearchTermsTest.testRemoveTerm </p>
+ *
+ */
+public static boolean removeSearchTerm(int lessonId, String term) {
+    if (term == null) {
+        return false;
+    }
+    String sql = "DELETE FROM lesson_search_terms WHERE lesson_id = ? AND term = ?";
+
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, lessonId);
+        pstmt.setString(2, term.trim().toLowerCase());
+
+        return pstmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.err.println("Error removing a search term: " + e.getMessage());
+        return false;
+    }
+}
+
+
+/*******
+ * <p> Method: boolean removeAllSearchTermsForLesson(int lessonId) </p>
+ *
+ * <p> Description: Remove every search term attached to a lesson.  This is called when a
+ *		lesson is deleted: the terms are held in their own table, so without this the rows
+ *		would be left behind with no lesson to point at, and a later lesson that was given the
+ *		same id by the database would inherit them.</p>
+ *
+ * @param lessonId is the id of the lesson whose terms are to be removed
+ *
+ * @return true if one or more terms were removed, else false
+ *
+ * <p> Validated by: LessonSearchTermsTest.testTermsRemovedWithLesson </p>
+ *
+ */
+public static boolean removeAllSearchTermsForLesson(int lessonId) {
+    String sql = "DELETE FROM lesson_search_terms WHERE lesson_id = ?";
+
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, lessonId);
+        return pstmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.err.println("Error removing the lesson's search terms: " + e.getMessage());
+        return false;
+    }
+}
 
 
 

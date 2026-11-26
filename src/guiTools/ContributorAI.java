@@ -1,6 +1,6 @@
 package guiTools;
 
-import javafx.stage.Stage;
+import javafx.stage.Stage; 
 import javafx.stage.Modality;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
