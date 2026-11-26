@@ -117,6 +117,10 @@ public class ControllerUserLogin {
     			theDatabase.getCurrentAdminRole(), 
     			theDatabase.getCurrentNewRole1(), theDatabase.getCurrentNewRole2(), theDatabase.getCurrentViewerRole());
     	
+    	// The User constructor stops at the Viewer role, so the Curator role is set here rather
+    	// than by adding a twelfth parameter that every other caller would also have to pass
+    	user.setCuratorRole(theDatabase.getCurrentCuratorRole());
+    	
     	// See which home page dispatch to use
 		int numberOfRoles = theDatabase.getNumberOfRoles(user);		
 		// System.out.println("*** The number of roles: "+ numberOfRoles);
@@ -144,6 +148,11 @@ public class ControllerUserLogin {
 				loginResult = theDatabase.loginViewer(user);
 				if (loginResult) {
 					guiViewer.ViewViewerHome.displayViewerHome(theStage, user);
+				}
+			} else if (user.getCuratorRole()) {
+				loginResult = theDatabase.loginCurator(user);
+				if (loginResult) {
+					guiCuratorHome.ViewCuratorHome.displayCuratorHome(theStage, user);
 				}
 			} else {
 				System.out.println("***** UserLogin goToUserHome request has an invalid role");

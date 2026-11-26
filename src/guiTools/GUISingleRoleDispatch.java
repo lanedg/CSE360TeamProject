@@ -82,6 +82,10 @@ public class GUISingleRoleDispatch {
 			guiRole1.ViewRole1Home.displayRole1Home(ps, user);
 		} else if (user.getNewRole2()) {
 			guiRole2.ViewRole2Home.displayRole2Home(ps, user);
+		} else if (user.getViewerRole()) {
+			guiViewer.ViewViewerHome.displayViewerHome(ps, user);
+		} else if (user.getCuratorRole()) {
+			guiCuratorHome.ViewCuratorHome.displayCuratorHome(ps, user);
 		} else {
 			// Invalid role
 			System.out.println("*** ERROR *** GUISingleRoleDispatch was asked to dispatch to " +

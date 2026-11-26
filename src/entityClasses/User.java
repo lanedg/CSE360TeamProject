@@ -10,6 +10,7 @@ package entityClasses;
  * 
  * @author Lynn Robert Carter
  * 
+ * Added curatorRole - Beck
  * 
  */ 
 
@@ -29,7 +30,7 @@ public class User {
     private boolean role1;
     private boolean role2;
     private boolean viewerRole;
-    
+    private boolean curatorRole;
     
     /*****
      * <p> Method: User() </p>
@@ -72,6 +73,7 @@ public class User {
         this.role1 = r2;
         this.role2 = r3;
         this.viewerRole = false;
+        this.curatorRole = false;
     }
     
     public User(String userName, String password, String fn, String mn, String ln, String pfn, 
@@ -87,6 +89,7 @@ public class User {
         this.role1 = r2;
         this.role2 = r3;
         this.viewerRole = r4;
+        this.curatorRole = false;
     }
 
     
@@ -143,6 +146,20 @@ public class User {
     // Sets the viewer role.
     public void setViewerRole(boolean role) {
     	this.viewerRole=role;
+    }
+    
+    
+    /*****
+     * <p> Method: void setCuratorRole(boolean role) </p>
+     * 
+     * <p> Description: This setter defines the curatorRole attribute. </p>
+     * 
+     * @param role is a boolean that specifies if this user is playing the Curator role.
+     * 
+     */
+    // Sets the curator role.
+    public void setCuratorRole(boolean role) {
+    	this.curatorRole = role;
     }
 
     
@@ -284,6 +301,17 @@ public class User {
      */
     // Gets the current value of the viewerRole attribute.
     public boolean getViewerRole() { return viewerRole; }
+    
+    
+    /*****
+     * <p> Method: boolean getCuratorRole() </p>
+     * 
+     * <p> Description: This getter returns the value of the curatorRole attribute. </p>
+     * 
+     * @return true if this user plays the Curator role, else false
+     */
+    // Gets the current value of the curatorRole attribute.
+    public boolean getCuratorRole() { return curatorRole; }
 
         
     /*****
@@ -301,6 +329,7 @@ public class User {
     	if (role1) numRoles++;
     	if (role2) numRoles++;
     	if (viewerRole) numRoles++;
+    	if (curatorRole) numRoles++;
     	return numRoles;
     }
     
@@ -342,6 +371,7 @@ public class User {
     	if (role1) rolesList.add("Role 1");
     	if (role2) rolesList.add("Role 2");
     	if (viewerRole) rolesList.add("Viewer");
+    	if (curatorRole) rolesList.add("Curator");
     	
     	String combinedRoles = String.join(", ", rolesList);
     	if (combinedRoles.isEmpty()) return "No Roles Assigned";
