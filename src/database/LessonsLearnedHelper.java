@@ -34,6 +34,9 @@ public class LessonsLearnedHelper {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
+            stmt.execute("ALTER TABLE lessons_learned ADD COLUMN IF NOT EXISTS lesson_locked BOOLEAN DEFAULT FALSE");
+            stmt.execute("ALTER TABLE lessons_learned ADD COLUMN IF NOT EXISTS merged_time_effort_stats TEXT");
+            stmt.execute("ALTER TABLE lessons_learned ADD COLUMN IF NOT EXISTS stats_visible_to_contributor BOOLEAN DEFAULT FALSE");
             System.out.println("Database table 'lessons_learned' initialized successfully.");
         } catch (SQLException e) {
             System.err.println("Error initializing database table: " + e.getMessage());
@@ -202,8 +205,8 @@ public class LessonsLearnedHelper {
  * 
  */
 public static boolean isLessonLocked(int id) {
-    String sql = "SELECT lesson_title_locked, experience_description_locked, " +
-                 "hours_spent_locked, effort_used_locked FROM lessons_learned WHERE id = ?";
+	String sql = "SELECT lesson_locked, lesson_title_locked, experience_description_locked, " +
+            "hours_spent_locked, effort_used_locked FROM lessons_learned WHERE id = ?";
 
     try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -213,10 +216,11 @@ public static boolean isLessonLocked(int id) {
 
         if (rs.next()) {
             // The lesson may not be deleted if any one of its fields has been locked
-            return rs.getBoolean("lesson_title_locked")
-                    || rs.getBoolean("experience_description_locked")
-                    || rs.getBoolean("hours_spent_locked")
-                    || rs.getBoolean("effort_used_locked");
+        	return rs.getBoolean("lesson_locked")
+        	        || rs.getBoolean("lesson_title_locked")
+        	        || rs.getBoolean("experience_description_locked")
+        	        || rs.getBoolean("hours_spent_locked")
+        	        || rs.getBoolean("effort_used_locked");
         }
     } catch (SQLException e) {
         System.err.println("Error checking lesson lock state: " + e.getMessage());
@@ -284,6 +288,9 @@ public static boolean deleteLesson(int id) {
             lesson.setHoursSpentLocked(set.getBoolean("hours_spent_locked"));
             lesson.setEffortUsed(set.getString("effort_used"));
             lesson.setEffortUsedLocked(set.getBoolean("effort_used_locked"));
+            lesson.setLessonLocked(set.getBoolean("lesson_locked"));
+            lesson.setMergedTimeEffortStats(set.getString("merged_time_effort_stats"));
+            lesson.setStatsVisibleToContributor(set.getBoolean("stats_visible_to_contributor"));
 
             return lesson;
         }
@@ -342,6 +349,106 @@ public static java.util.List<String> getLessonListForAuthor(String authorID) {
         }
         return lessonList;
     }
+
+/**
+ * <p> Method: getAllLessons </p>
+ * <p> Description: Retrieves all lessons from lessons_learned for Curator merge and lock views. </p>
+ * <p> Validated by: MergedDataTest#testSaveAndRetrieveMergedStats </p>
+ * @return ArrayList of all LessonsLearned records
+ */
+public static ArrayList<LessonsLearned> getAllLessons() {
+	ArrayList<LessonsLearned> list = new ArrayList<>();
+	String sql = "SELECT * FROM lessons_learned ORDER BY id";
+
+	try (Connection conn = getConnection();
+		 PreparedStatement pstmt = conn.prepareStatement(sql);
+		 ResultSet rs = pstmt.executeQuery()) {
+
+		while (rs.next()) {
+			LessonsLearned lesson = new LessonsLearned(
+				rs.getString("author_id"),
+				rs.getString("lesson_title")
+			);
+			lesson.setId(rs.getInt("id"));
+			lesson.setLessonTitleLocked(rs.getBoolean("lesson_title_locked"));
+			lesson.setExperienceDescription(rs.getString("experience_description"));
+			lesson.setExperienceDescriptionLocked(rs.getBoolean("experience_description_locked"));
+			lesson.setHoursSpent(rs.getDouble("hours_spent"));
+			lesson.setHoursSpentLocked(rs.getBoolean("hours_spent_locked"));
+			lesson.setEffortUsed(rs.getString("effort_used"));
+			lesson.setEffortUsedLocked(rs.getBoolean("effort_used_locked"));
+			lesson.setLessonLocked(rs.getBoolean("lesson_locked"));
+			lesson.setMergedTimeEffortStats(rs.getString("merged_time_effort_stats"));
+			lesson.setStatsVisibleToContributor(rs.getBoolean("stats_visible_to_contributor"));
+			list.add(lesson);
+		}
+	} catch (SQLException e) {
+		System.err.println("Error retrieving all lessons: " + e.getMessage());
+	}
+	return list;
+}
+
+/**
+ * <p> Method: updateMergedStats </p>
+ * <p> Description: Saves merged time/effort statistics and contributor visibility flag for a lesson. </p>
+ * <p> Validated by: MergedDataTest#testSaveAndRetrieveMergedStats </p>
+ * @param lessonId the target lesson ID
+ * @param stats the formatted statistical summary
+ * @param visibleToContributor true to make stats visible to the contributor
+ * @return true if the record was updated
+ */
+public static boolean updateMergedStats(int lessonId, String stats, boolean visibleToContributor) {
+	String sql = "UPDATE lessons_learned SET merged_time_effort_stats = ?, stats_visible_to_contributor = ? WHERE id = ?";
+
+	try (Connection conn = getConnection();
+		 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+		pstmt.setString(1, stats);
+		pstmt.setBoolean(2, visibleToContributor);
+		pstmt.setInt(3, lessonId);
+		return pstmt.executeUpdate() > 0;
+	} catch (SQLException e) {
+		System.err.println("Failed to update merged stats: " + e.getMessage());
+		return false;
+	}
+}
+
+/**
+ * <p> Method: updateLessonLocks </p>
+ * <p> Description: Updates whole-lesson and per-field lock flags for a lesson.
+ * If lessonLocked is true, all individual field locks are also forced true. </p>
+ * <p> Validated by: CuratorLockTest#testPersistLessonLocks </p>
+ * @param lesson the LessonsLearned object with updated lock states
+ * @return true if the record was updated
+ */
+public static boolean updateLessonLocks(LessonsLearned lesson) {
+	// Enforce all field locks when the whole lesson is locked so Contributor SQL checks block every field
+	boolean fullLock = lesson.isLessonLocked();
+	String sql = "UPDATE lessons_learned SET lesson_locked = ?, lesson_title_locked = ?, " +
+				 "experience_description_locked = ?, hours_spent_locked = ?, effort_used_locked = ? WHERE id = ?";
+
+	try (Connection conn = getConnection();
+		 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+		pstmt.setBoolean(1, fullLock);
+		pstmt.setBoolean(2, fullLock || lesson.isLessonTitleLocked());
+		pstmt.setBoolean(3, fullLock || lesson.isExperienceDescriptionLocked());
+		pstmt.setBoolean(4, fullLock || lesson.isHoursSpentLocked());
+		pstmt.setBoolean(5, fullLock || lesson.isEffortUsedLocked());
+		pstmt.setInt(6, lesson.getId());
+		return pstmt.executeUpdate() > 0;
+	} catch (SQLException e) {
+		System.err.println("Failed to update lesson locks: " + e.getMessage());
+		return false;
+	}
+}
+
+
+
+
+
+
+
 
 
 }

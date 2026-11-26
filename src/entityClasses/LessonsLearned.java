@@ -26,6 +26,9 @@ public class LessonsLearned {
 	private boolean hoursSpentLocked;
 	private String effortUsed; 
 	private boolean effortUsedLocked;
+	private boolean lessonLocked;
+	private String mergedTimeEffortStats;
+	private boolean statsVisibleToContributor;
 	
 	/**********
 	 * <p> Title: LessonsLearned Constructor </p>
@@ -239,5 +242,85 @@ public class LessonsLearned {
 	
 	public void setEffortUsedLocked(boolean effortUsedLocked) {
 		this.effortUsedLocked = effortUsedLocked;
-	}	
+	}
+	
+	/**
+	 * <p> Method: isLessonLocked </p>
+	 * <p> Description: Checks if the entire lesson is locked by a Curator. </p>
+	 * <p> Validated by: CuratorLockTest#testLockEntireLesson </p>
+	 * @return true if the entire lesson is locked, false otherwise
+	 */
+	public boolean isLessonLocked() {
+		return lessonLocked;
+	}
+
+	/**
+	 * <p> Method: setLessonLocked </p>
+	 * <p> Description: Locks or unlocks the entire lesson. When locked, all individual
+	 * field locks are also set to true so Contributor edit checks remain consistent. </p>
+	 * <p> Validated by: CuratorLockTest#testLockEntireLesson </p>
+	 * @param lessonLocked true to lock the entire lesson, false to unlock
+	 */
+	public void setLessonLocked(boolean lessonLocked) {
+		this.lessonLocked = lessonLocked;
+		// Locking the entire lesson enforces locks on all individual fields
+		if (lessonLocked) {
+			this.lessonTitleLocked = true;
+			this.experienceDescriptionLocked = true;
+			this.hoursSpentLocked = true;
+			this.effortUsedLocked = true;
+		}
+	}
+
+	/**
+	 * <p> Method: hasAnyLock </p>
+	 * <p> Description: Returns true if the entire lesson or any individual field is locked.
+	 * Used to block Contributors from deleting the lesson. </p>
+	 * <p> Validated by: CuratorLockTest#testHasAnyLockBlocksDelete </p>
+	 * @return true if any lock is active
+	 */
+	public boolean hasAnyLock() {
+		return lessonLocked || lessonTitleLocked || experienceDescriptionLocked
+				|| hoursSpentLocked || effortUsedLocked;
+	}
+
+	/**
+	 * <p> Method: getMergedTimeEffortStats </p>
+	 * <p> Description: Retrieves the Curator's merged statistical summary. </p>
+	 * <p> Validated by: MergedDataTest#testGenerateStatisticalSummary </p>
+	 * @return formatted statistical summary string
+	 */
+	public String getMergedTimeEffortStats() {
+		return mergedTimeEffortStats;
+	}
+
+	/**
+	 * <p> Method: setMergedTimeEffortStats </p>
+	 * <p> Description: Stores the Curator's merged statistical summary. </p>
+	 * <p> Validated by: MergedDataTest#testGenerateStatisticalSummary </p>
+	 * @param mergedTimeEffortStats formatted statistical summary string
+	 */
+	public void setMergedTimeEffortStats(String mergedTimeEffortStats) {
+		this.mergedTimeEffortStats = mergedTimeEffortStats;
+	}
+
+	/**
+	 * <p> Method: isStatsVisibleToContributor </p>
+	 * <p> Description: Checks whether the merged stats are visible to the Contributor. </p>
+	 * <p> Validated by: MergedDataTest#testStatsVisibilityFlag </p>
+	 * @return true if visible to Contributor, false if hidden
+	 */
+	public boolean isStatsVisibleToContributor() {
+		return statsVisibleToContributor;
+	}
+
+	/**
+	 * <p> Method: setStatsVisibleToContributor </p>
+	 * <p> Description: Toggles whether the Contributor can view merged stats. </p>
+	 * <p> Validated by: MergedDataTest#testStatsVisibilityFlag </p>
+	 * @param statsVisibleToContributor true to show stats, false to hide
+	 */
+	public void setStatsVisibleToContributor(boolean statsVisibleToContributor) {
+		this.statsVisibleToContributor = statsVisibleToContributor;
+	}
 }
